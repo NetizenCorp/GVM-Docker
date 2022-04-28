@@ -4,7 +4,7 @@ apt-get update
 
 apt-get install -y gnupg curl apt-utils ca-certificates wget
 
-echo "deb http://apt.postgresql.org/pub/repos/apt jammy-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+echo "deb http://apt.postgresql.org/pub/repos/apt focal-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 wget -qO https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 
 apt-get update
