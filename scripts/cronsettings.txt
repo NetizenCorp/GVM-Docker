@@ -1,0 +1,2 @@
+* 1 * * * /sync-all.sh > /syncupdate-'date +%d%m%y'.log 2>&1
+* 4 * * * apt update && apt upgrade -y && apt autoremove -y > /autoupdate-'date +%d%m%y'.log 2>&1
