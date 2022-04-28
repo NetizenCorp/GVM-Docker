@@ -6,11 +6,11 @@ services:
           - gvm-data:/data
         environment:
           - USERNAME="admin"
-          - PASSWORD="Ac492bhz3" #Please use 10+ Characters consisting of numbers, lower & upper case  letters
+          - PASSWORD="admin" #Please use 10+ Characters consisting of numbers, lower & upper case  letters
           - HTTPS=true
           - TZ="ETC"
           - SSHD=true
-          - DB_PASSWORD="Ac492bhz3"
+          - DB_PASSWORD="admin"
         ports:
           - "443:9392"  # Web interface
           - "5432:5432" # Access PostgreSQL database from external tools
