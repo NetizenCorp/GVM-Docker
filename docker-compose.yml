@@ -1,20 +1,20 @@
 version: "3.1"
 services:
     gvm:
-        image: gvm
+        image: netizensoc/gvm-scanner:[latest|dev] # Latest is the stable image. Dev is the development un-stable image
         volumes:
-          - gvm-data:/data
+          - gvm-data:/data              # DO NOT MODIFY
         environment:
-          - USERNAME="admin"
-          - PASSWORD="admin" #Please use 10+ Characters consisting of numbers, lower & upper case  letters
-          - HTTPS=true
-          - TZ="ETC"
-          - SSHD=true
-          - DB_PASSWORD="admin"
+          - USERNAME="admin"            # You can leave the username as admin or change to what ever you like
+          - PASSWORD="admin"            # Please use 10+ Characters consisting of numbers, lower & uppercase letters. Special Characters can break the login.
+          - HTTPS=true                  # DO NOT MODIFY
+          - TZ="ETC"                    # Change to your corresponding timezone
+          - SSHD=true                   # Mark true if using a Remote Scanner. Mark false if using a standalone operation.
+          - DB_PASSWORD="dbpassword"    # Run the following command to generate "openssl rand -hex 40"
         ports:
           - "443:9392"  # Web interface
           - "5432:5432" # Access PostgreSQL database from external tools
-          - "2222:22"   # SSH for remote sensors
-        restart: unless-stopped
+          - "2222:22"   # SSH for remote sensors. You can remove if you don't plan on using remote scanners.
+        restart: unless-stopped # Remove if your using for penetration testing or one-time scans. Only use if using for production/continuous scanning
 volumes:
     gvm-data:
