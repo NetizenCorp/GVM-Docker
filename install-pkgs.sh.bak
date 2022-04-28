@@ -2,10 +2,10 @@
 
 apt-get update
 
-apt-get install -y gnupg curl apt-utils
+apt-get install -y gnupg curl apt-utils ca-certificates
 
 echo "deb http://apt.postgresql.org/pub/repos/apt jammy-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | apt-key add -
 
 apt-get update
 
