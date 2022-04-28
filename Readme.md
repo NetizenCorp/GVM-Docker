@@ -27,7 +27,7 @@ Next, you will modify the docker-compose.yml file using your preferred editor (n
 ```bash
 nano docker-compose.yml
 ```
-Edit the yml file with your preferences. NOTE: Netizen is not responsible for any break if user fails to change the default username and passwords.
+Edit the yml file with your preferences. NOTE: Netizen is not responsible for any breach if user fails to change the default username and passwords.
 ```bash
 version: "3.1"
 services:
