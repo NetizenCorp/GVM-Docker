@@ -40,6 +40,7 @@ libsnmp-dev \
 libssh-gcrypt-dev \
 libunistring-dev \
 libxml2-dev \
+nano \
 nmap \
 nsis \
 openssh-client \
