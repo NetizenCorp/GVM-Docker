@@ -1,4 +1,3 @@
-# GVM-Docker
 ![Netizen Logo](https://www.netizen.net/assets/img/netizen_banner_cybersecure_small.png)
 
 Visit out Website: https://www.netizen.net
