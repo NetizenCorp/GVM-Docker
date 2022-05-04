@@ -19,7 +19,7 @@ sudo usermod -aG docker ${USER}
 ```
 Next, create a directory and download the docker-compose.yml file from github
 ```bash
-mkdir /home/$USER/docker/gvm-docker
+mkdir -p /home/$USER/docker/gvm-docker
 cd /home/$USER/docker/gvm-docker
 wget https://raw.githubusercontent.com/NetizenCorp/GVM-Docker/main/docker-compose.yml
 ```
