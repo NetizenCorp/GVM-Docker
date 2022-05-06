@@ -3,36 +3,37 @@
 Visit out Website: https://www.netizen.net
 
 # Greenbone Vulnerability Manager/Scanner
-## Latest Version: 21.4.4-v1
+## Latest Version: 21.4.4-v2
 ![Docker Pulls](https://img.shields.io/docker/pulls/netizensoc/gvm-scanner?style=plastic)
 ![GitHub](https://img.shields.io/github/license/thecomet28/gvm-docker)
 
-This setup is based on Greenbone Vulnerability Management and OpenVAS. We have made improvements to help stability and functionality.
+The docker container is based on the latest version of Greenbone Vulnerability Management 11 and OpenVAS. Netizen continues to make improvements to the software for stability and functionality of the suite. Our container supports AMD 64-bit and ARM 64-bit based operating systems.
 
-## Installation
-First, install docker and docker-compose on your linux system. After installation, apply permissions to a user(s) that will use docker.
+A remote scanner can be found at visiting our [Openvas-Docker Github Repo](https://github.com/NetizenCorp/OpenVAS-Docker).
+
+## Installation for AMD 64-Bit Based Operating Systems
+First, install required packages, docker, and docker-compose on your linux system. After installation, apply permissions to a user(s) that will use docker. ${USER} is the username of the user(s).
 ```bash
 sudo apt update
-sudo apt install apt-transport-https ca-certificates curl software-properties-common
-sudo apt install -y docker.io docker-compose
+sudo apt install -y apt-transport-https ca-certificates curl software-properties-common docker.io docker-compose
 sudo usermod -aG docker ${USER}
 ```
-Next, create a directory and download the docker-compose.yml file from github
+Next, create a directory and download the docker-compose.yml file from github.
 ```bash
 mkdir -p /home/$USER/docker/gvm-docker
 cd /home/$USER/docker/gvm-docker
 wget https://raw.githubusercontent.com/NetizenCorp/GVM-Docker/main/docker-compose.yml
 ```
-Next, you will modify the docker-compose.yml file using your preferred editor (nano or vim)
+Next, you will modify the docker-compose.yml file using your preferred editor (nano or vim).
 ```bash
 nano docker-compose.yml
 ```
-Edit the yml file with your preferences. NOTE: Netizen is not responsible for any breach if user fails to change the default username and passwords.
+Edit the yml file with your preferences. NOTE: Netizen is not responsible for any breach if user fails to change the default username and passwords. Make sure to store your passwords in a secure password manager.
 ```bash
 version: "3.1"
 services:
     gvm:
-        image: netizensoc/gvm-scanner:[latest|dev] # Latest is the stable image. Dev is the development un-stable image
+        image: netizensoc/gvm-scanner:[latest|dev] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image.
         volumes:
           - gvm-data:/data              # DO NOT MODIFY
         environment:
@@ -50,13 +51,71 @@ services:
 volumes:
     gvm-data:
 ```
-Finally, its time to stand up the docker using docker-compose.
+Next, its time to stand up the docker using docker-compose.
 ```bash
-docker-compose up -d # The -d option is for a detached docker image
+sudo docker-compose up -d # The -d option is for a detached docker image
+```
+It will take time for the container to be ready as it compiles the NVTs, CVE, CERTS, and SCAP data. To monitor this activity use the docker logs command.
+```bash
+docker container ls # Lists the current containers running on the system. Look under the Names column for the container name. Ex: gvm-docker_gvm_1
+docker logs -f [container name] # Example: docker logs -f gvm-docker_gvm_1
 ```
 
-A remote scanner can be found at visiting our [Openvas-Docker](https://github.com/thecomet28/OpenVAS-Docker).
+After everything is complete, go the https://[Host IP Address]/ to access the scanner. Use the credentials you provided in the yml file.
 
+## Installation for ARM 64-Bit Based Operating Systems
+First, install docker and docker-compose on your linux system. After installation, apply permissions to a user(s) that will use docker. ${USER} is the username of the user(s).
+```bash
+sudo apt update
+sudo apt install -y apt-transport-https ca-certificates curl software-properties-common docker.io docker-compose
+sudo usermod -aG docker ${USER}
+```
+Next, create a directory, clone the GitHub Repository, and Build the Docker Image. Note: The building process will take time to complete.
+```bash
+mkdir -p /home/$USER/docker/
+cd /home/$USER/docker/
+git clone https://github.com/NetizenCorp/GVM-Docker.git
+cd GVM-Docker/
+docker build . -t gvm
+```
+After the build is complete, you will modify the docker-compose.yml file using your preferred editor (nano or vim).
+```bash
+nano docker-compose.yml
+```
+Edit the yml file with your preferences. NOTE: Netizen is not responsible for any breach if user fails to change the default username and passwords. Make sure to store your passwords in a secure password manager.
+```bash
+version: "3.1"
+services:
+    gvm:
+        image: gvm:latest
+        volumes:
+          - gvm-data:/data              # DO NOT MODIFY
+        environment:
+          - USERNAME="admin"            # You can leave the username as admin or change to what ever you like
+          - PASSWORD="admin"            # Please use 10+ Characters consisting of numbers, lower & uppercase letters. Special Characters can break the login.
+          - HTTPS=true                  # DO NOT MODIFY
+          - TZ="ETC"                    # Change to your corresponding timezone
+          - SSHD=true                   # Mark true if using a Remote Scanner. Mark false if using a standalone operation.
+          - DB_PASSWORD="dbpassword"    # Run the following command to generate "openssl rand -hex 40"
+        ports:
+          - "443:9392"  # Web interface
+          - "5432:5432" # Access PostgreSQL database from external tools
+          - "2222:22"   # SSH for remote sensors. You can remove if you don't plan on using remote scanners.
+        restart: unless-stopped # Remove if your using for penetration testing or one-time scans. Only use if using for production/continuous scanning
+volumes:
+    gvm-data:
+```
+Next, its time to stand up the docker using docker-compose.
+```bash
+sudo docker-compose up -d # The -d option is for a detached docker image
+```
+It will take time for the container to be ready as it compiles the NVTs, CVE, CERTS, and SCAP data. To monitor this activity use the docker logs command.
+```bash
+docker container ls # Lists the current containers running on the system. Look under the Names column for the container name. Ex: gvm-docker_gvm_1
+docker logs -f [container name] # Example: docker logs -f gvm-docker_gvm_1
+```
+
+After everything is complete, go the https://[Host IP Address]/ to access the scanner. Use the credentials you provided in the yml file.
 ## Architecture
 
 The key points to take away from the diagram below, is the way our setup establishes connection with the remote sensor, and the available ports on the GMV-Docker container. You can still use any add on tools you've used in the past with OpenVAS on 9390. One of the latest/best upgrades allows you connect directly to postgres using your favorite database tool. 
@@ -82,4 +141,4 @@ The key points to take away from the diagram below, is the way our setup establi
 
 
 ## About
-Any Issues or Suggestions for the Project can be communicated via the [issues](https://github.com/thecomet28/GVM-Docker/issues). Thanks.
+Any Issues or Suggestions for the Project can be communicated via the [issues](https://github.com/NetizenCorp/GVM-Docker/issues). Thanks.
