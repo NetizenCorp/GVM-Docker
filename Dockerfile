@@ -162,6 +162,4 @@ COPY scripts/* /
 
 RUN chmod +x /*.sh
 
-# CMD '/start.sh'
-
-ENTRYPOINT ["/start.sh"]
+CMD '/start.sh'
