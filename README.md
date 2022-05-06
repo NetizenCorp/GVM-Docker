@@ -7,7 +7,7 @@ Visit out Website: https://www.netizen.net
 ![Docker Pulls](https://img.shields.io/docker/pulls/netizensoc/gvm-scanner?style=plastic)
 ![GitHub](https://img.shields.io/github/license/thecomet28/gvm-docker)
 
-The docker container is based on the latest version of Greenbone Vulnerability Management 11 and OpenVAS. Netizen continues to make improvements to the software for stability and functionality of the suite. Our container supports AMD 64-bit and ARM 64-bit based operating systems.
+The docker container is based on the latest version of Greenbone Vulnerability Management 11 and OpenVAS. Netizen continues to make improvements to the software for stability and functionality of the suite. This container supports AMD 64-bit and ARM 64-bit based operating systems.
 
 A remote scanner can be found at visiting our [Openvas-Docker Github Repo](https://github.com/NetizenCorp/OpenVAS-Docker).
 
