@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
@@ -94,6 +94,7 @@ RUN curl -f -L https://github.com/greenbone/gsad/archive/refs/tags/v$GSAD_VERSIO
         -DLOGROTATE_DIR=/etc/logrotate.d && \
     make -j$(nproc) && \
     make install
+	
     #
     # install smb module for the OpenVAS Scanner
     #
