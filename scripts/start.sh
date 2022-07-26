@@ -39,6 +39,11 @@ while  [ "${X}" != "PONG" ]; do
 done
 echo "Redis ready."
 
+echo "Starting Mosquitto..."
+systemctl start mosquitto.service
+systemctl enable mosquitto.service
+echo "mqtt_server_uri = localhost:1883" | tee -a /etc/openvas/openvas.conf
+
 
 if  [ ! -d /data ]; then
 	echo "Creating Data folder..."
@@ -49,13 +54,13 @@ if  [ ! -d /data/database ]; then
 	echo "Creating Database folder..."
 	mkdir /data/database
 	chown postgres:postgres -R /data/database
-	su -c "/usr/lib/postgresql/12/bin/initdb /data/database" postgres
+	su -c "/usr/lib/postgresql/13/bin/initdb /data/database" postgres
 fi
 
 chown postgres:postgres -R /data/database
 
 echo "Starting PostgreSQL..."
-su -c "/usr/lib/postgresql/12/bin/pg_ctl -D /data/database start" postgres
+su -c "/usr/lib/postgresql/13/bin/pg_ctl -D /data/database start" postgres
 
 if  [ ! -d /data/ssh ]; then
 	echo "Creating SSH folder..."
@@ -147,7 +152,7 @@ if [ ! -f "/data/firstrun" ]; then
 	
 	chown postgres:postgres -R /data/database
 	
-	su -c "/usr/lib/postgresql/12/bin/pg_ctl -D /data/database restart" postgres
+	su -c "/usr/lib/postgresql/13/bin/pg_ctl -D /data/database restart" postgres
 	
 	touch /data/firstrun
 fi
