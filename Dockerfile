@@ -7,15 +7,16 @@ COPY install-pkgs.sh /install-pkgs.sh
 
 RUN bash /install-pkgs.sh
 
-ENV GVM_LIBS_VERSION="21.4.4" \
-    OPENVAS_SCANNER_VERSION="21.4.4" \
-    GVMD_VERSION="21.4.5" \
-    GSA_VERSION="21.4.4" \
-    GSAD_VERSION="21.4.4" \
-    gvm_tools_version="21.10.0" \
-    OPENVAS_SMB_VERSION="21.4.0" \
-    OSPD_OPENVAS_VERSION="21.4.4" \
-    python_gvm_version="21.11.0" \
+ENV GVM_LIBS_VERSION="22.4.0" \
+    OPENVAS_SCANNER_VERSION="22.4.0" \
+    GVMD_VERSION="22.4.0" \
+    GSA_VERSION="22.4.0" \
+    GSAD_VERSION="22.4.0" \
+    gvm_tools_version="22.6.1" \
+    OPENVAS_SMB_VERSION="22.4.0" \
+    OSPD_OPENVAS_VERSION="22.4.0" \
+    python_gvm_version="22.6.1" \
+    PG_GVM_VERSION="22.4.0" \
     INSTALL_PREFIX="/usr/local" \
     SOURCE_DIR="/source" \
     BUILD_DIR="/build" \
@@ -59,6 +60,19 @@ RUN curl -f -L https://github.com/greenbone/gvmd/archive/refs/tags/v$GVMD_VERSIO
         -DGVM_FEED_LOCK_PATH=/var/lib/gvm/feed-update.lock \
         -DDEFAULT_CONFIG_DIR=/etc/default \
         -DLOGROTATE_DIR=/etc/logrotate.d && \
+    make -j$(nproc) && \
+    make install
+    
+    #
+    # Install PostgreSQL GVM (pg-gvm)
+    #    
+    
+RUN curl -f -L https://github.com/greenbone/pg-gvm/archive/refs/tags/v$PG_GVM_VERSION.tar.gz -o $SOURCE_DIR/pg-gvm-$PG_GVM_VERSION.tar.gz && \
+    curl -f -L https://github.com/greenbone/pg-gvm/releases/download/v$PG_GVM_VERSION/pg-gvm-$PG_GVM_VERSION.tar.gz.asc -o $SOURCE_DIR/pg-gvm-$PG_GVM_VERSION.tar.gz.asc && \
+    tar -C $SOURCE_DIR -xvzf $SOURCE_DIR/pg-gvm-$PG_GVM_VERSION.tar.gz && \
+    mkdir -p $BUILD_DIR/pg-gvm && cd $BUILD_DIR/pg-gvm && \
+    cmake $SOURCE_DIR/pg-gvm-$PG_GVM_VERSION \
+        -DCMAKE_BUILD_TYPE=Release \
     make -j$(nproc) && \
     make install
 
