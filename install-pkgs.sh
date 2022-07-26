@@ -18,11 +18,13 @@ curl \
 dpkg \
 fakeroot \
 gcc-mingw-w64 \
+gcc \
 gnupg \
 gnutls-bin \
 gpgsm \
 heimdal-dev \
 libgcrypt20-dev \
+libjson-glib-dev \
 libglib2.0-dev \
 libgnutls28-dev \
 libgpgme-dev \
@@ -31,6 +33,7 @@ libical-dev \
 libksba-dev \
 libldap2-dev \
 libmicrohttpd-dev \
+libpaho-mqtt-dev \
 libnet1-dev \
 libpcap-dev \
 libpopt-dev \
@@ -38,6 +41,7 @@ libpq-dev \
 libradcli-dev \
 libsnmp-dev \
 libssh-gcrypt-dev \
+libbsd-dev \
 libunistring-dev \
 libxml2-dev \
 nano \
@@ -47,8 +51,8 @@ openssh-client \
 openssh-server \
 perl-base \
 pkg-config \
-postgresql-server-dev-12 \
-postgresql-12 \
+postgresql-server-dev-13 \
+postgresql-13 \
 postfix \
 python3 \
 python3-cffi \
@@ -62,6 +66,7 @@ python3-psutil \
 python3-redis \
 python3-setuptools \
 python3-wrapt \
+python3-paho-mqtt \
 redis-server \
 rpm \
 rsync \
