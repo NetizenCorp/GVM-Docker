@@ -40,8 +40,8 @@ done
 echo "Redis ready."
 
 echo "Starting Mosquitto..."
-systemctl start mosquitto.service
-systemctl enable mosquitto.service
+service mosquitto.service start
+service mosquitto.service enable
 echo "mqtt_server_uri = localhost:1883" | tee -a /etc/openvas/openvas.conf
 
 
