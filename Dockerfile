@@ -72,7 +72,7 @@ RUN curl -f -L https://github.com/greenbone/pg-gvm/archive/refs/tags/v$PG_GVM_VE
     tar -C $SOURCE_DIR -xvzf $SOURCE_DIR/pg-gvm-$PG_GVM_VERSION.tar.gz && \
     mkdir -p $BUILD_DIR/pg-gvm && cd $BUILD_DIR/pg-gvm && \
     cmake $SOURCE_DIR/pg-gvm-$PG_GVM_VERSION \
-        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_BUILD_TYPE=Release && \
     make -j$(nproc) && \
     make install
 
