@@ -40,8 +40,7 @@ done
 echo "Redis ready."
 
 echo "Starting Mosquitto..."
-service mosquitto.service start
-service mosquitto.service enable
+/usr/sbin/mosquitto &
 echo "mqtt_server_uri = localhost:1883" | tee -a /etc/openvas/openvas.conf
 
 
@@ -84,7 +83,7 @@ if [ ! -f "/firstrun" ]; then
 	ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 	echo "Creating Greenbone Vulnerability system user..."
-	useradd -r -M -d /var/lib/gvm -U -G sudo -s /bin/bash gvm
+	useradd -r -M -d /var/lib/gvm -U -G sudo -s /bin/bash gvm || echo "User already exists"
 	usermod -aG tty gvm
 	usermod -aG sudo gvm
 #	useradd --home-dir /home/gvm gvm
@@ -102,6 +101,7 @@ if [ ! -f "/firstrun" ]; then
 #	chown gvm:gvm -R /usr/local/var/log/gvm
 #	
 #	chown gvm:gvm -R /usr/local/var/run
+	mkdir -p /run/gvmd
 	mkdir -p /var/lib/gvm
 	mkdir -p /var/lib/gvm/CA
 	mkdir -p /var/lib/gvm/cert-data
@@ -163,11 +163,6 @@ if [ ! -f "/data/upgrade_to_21.4.0" ]; then
 	su -c "psql --dbname=gvmd --command='UPDATE vt_severities SET score = round((score / 10.0)::numeric, 1);'" postgres
 	su -c "psql --dbname=gvmd --command='ALTER TABLE vt_severities OWNER TO gvm;'" postgres
 	touch /data/upgrade_to_21.4.0
-fi
-
-if [ ! -d "/run/gvmd" ]; then
-	mkdir -p /run/gvmd
-	chown gvm:gvm -R /run/gvmd/
 fi
 
 su -c "gvmd --migrate" gvm
