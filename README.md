@@ -16,7 +16,6 @@ First, install required packages, docker, and docker-compose on your linux syste
 ```bash
 sudo apt update
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common docker.io docker-compose
-sudo usermod -aG docker ${USER}
 ```
 Next, create a directory and download the docker-compose.yml file from github.
 ```bash
