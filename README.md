@@ -172,8 +172,8 @@ sudo docker container stop [Container name]
 sudo docker rm [Container name] #This will remove the container and volume
 sudo docker image ls #This is find the name of the image and remove the old version
 sudo docker image rm [image name]
-sudo docker-compose up -d
 ```
+- Follow the build instructions for [ARM64](https://github.com/NetizenCorp/GVM-Docker/tree/dev#arm-64-bit-operation-system-installation) installation to build and deploy the docker image.
 - After starting up the docker image, wait for it to finish before restoring the database. To restore the database file run the following commands:
 ```bash
 sudo docker container ls #This is to get the new container ID of the docker image
