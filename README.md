@@ -126,7 +126,7 @@ sudo docker container ls
 ```
 - Copy the container ID of the GVM scanner to use for the docker copy
 ```bash
-sudo docker cp [Container ID]:/dumpfile.sql /dumpfile.sql
+sudo docker cp [Container ID]:/dumpfile.sql ~/dumpfile.sql
 sudo docker container stop [Container name]
 sudo docker rm [Container name] #This will remove the container and volume
 sudo docker image ls #This is find the name of the image and remove the old version
