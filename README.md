@@ -135,7 +135,7 @@ sudo docker-compose up -d
 - After starting up the docker image, wait for it to finish before restoring the database. To restore the database file run the following commands:
 ```bash
 sudo docker container ls #This is to get the new container ID of the docker image
-sudo docker cp /dumpfile.sql [Container ID]:/dumpfile.sql
+sudo docker cp /dumpfile.sql [Container ID]:/
 sudo docker exec -it [container name] bash
 pg_restore -U gvm -d gvmd -c dumpfile.sql
 ```
