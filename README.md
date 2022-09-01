@@ -56,8 +56,8 @@ sudo docker-compose up -d # The -d option is for a detached docker image
 ```
 It will take time for the container to be ready as it compiles the NVTs, CVE, CERTS, and SCAP data. To monitor this activity use the docker logs command.
 ```bash
-docker container ls # Lists the current containers running on the system. Look under the Names column for the container name. Ex: gvm-docker_gvm_1
-docker logs -f [container name] # Example: docker logs -f gvm-docker_gvm_1
+sudo docker container ls # Lists the current containers running on the system. Look under the Names column for the container name. Ex: gvm-docker_gvm_1
+sudo docker logs -f [container name] # Example: docker logs -f gvm-docker_gvm_1
 ```
 
 After everything is complete, go the https://[Host IP Address]/ to access the scanner. Use the credentials you provided in the yml file.
@@ -75,7 +75,7 @@ mkdir -p /home/$USER/docker/
 cd /home/$USER/docker/
 git clone https://github.com/NetizenCorp/GVM-Docker.git
 cd GVM-Docker/
-docker build . -t gvm
+sudo docker build . -t gvm
 ```
 After the build is complete, you will modify the docker-compose.yml file using your preferred editor (nano or vim).
 ```bash
@@ -110,11 +110,38 @@ sudo docker-compose up -d # The -d option is for a detached docker image
 ```
 It will take time for the container to be ready as it compiles the NVTs, CVE, CERTS, and SCAP data. To monitor this activity use the docker logs command.
 ```bash
-docker container ls # Lists the current containers running on the system. Look under the Names column for the container name. Ex: gvm-docker_gvm_1
-docker logs -f [container name] # Example: docker logs -f gvm-docker_gvm_1
+sudo docker container ls # Lists the current containers running on the system. Look under the Names column for the container name. Ex: gvm-docker_gvm_1
+sudo docker logs -f [container name] # Example: docker logs -f gvm-docker_gvm_1
 ```
 
 After everything is complete, go the https://[Host IP Address]/ to access the scanner. Use the credentials you provided in the yml file.
+## PostgreSQL Upgrade
+If you are upgrade from the the previous version, you will need to back up your database and then destroy the previous docker container and volume. The new version uses Postgres version 13. Please follow the steps below to backup, upgrade, and restore your database.
+- Log into the terminal Linux Box hosting the GVM scanner and then type the following commands
+```bash
+sudo docker exec -it [container name] bash
+pg_dump -U postgres -d gvmd --role gvm -n public --blobs --format=c -f "dumpfile.sql"
+exit
+sudo docker container ls
+```
+- Copy the container ID of the GVM scanner to use for the docker copy
+```bash
+sudo docker cp [Container ID]:/dumpfile.sql /dumpfile.sql
+sudo docker container stop [Container name]
+sudo docker rm [Container name] #This will remove the container and volume
+sudo docker image ls #This is find the name of the image and remove the old version
+sudo docker image rm [image name]
+sudo docker-compose up -d
+```
+- After starting up the docker image, wait for it to finish before restoring the database. To restore the database file run the following commands:
+```bash
+sudo docker container ls #This is to get the new container ID of the docker image
+sudo docker cp /dumpfile.sql [Container ID]:/dumpfile.sql
+sudo docker exec -it [container name] bash
+pg_restore -U gvm -d gvmd -c dumpfile.sql
+```
+After executing that command, wait for the restore function to place all the information back and then log in to verify your data has been restored.
+
 ## Architecture
 
 The key points to take away from the diagram below, is the way our setup establishes connection with the remote sensor, and the available ports on the GMV-Docker container. You can still use any add on tools you've used in the past with OpenVAS on 9390. One of the latest/best upgrades allows you connect directly to postgres using your favorite database tool. 
