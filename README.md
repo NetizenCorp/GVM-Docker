@@ -7,7 +7,7 @@ Visit out Website: https://www.netizen.net
 ![Docker Pulls](https://img.shields.io/docker/pulls/netizensoc/gvm-scanner?style=plastic)
 ![GitHub](https://img.shields.io/github/license/thecomet28/gvm-docker)
 
-The docker container is based on the latest version of Greenbone Vulnerability Management 11 and OpenVAS. Netizen continues to make improvements to the software for stability and functionality of the suite. This container supports AMD 64-bit and ARM 64-bit Linux based operating systems.
+The docker container is based on the latest version of Greenbone Vulnerability Management 11 and OpenVAS. Netizen continues to make improvements to the software for stability and functionality of the suite. This container supports AMD 64-bit and ARM 64-bit Linux based operating systems. If upgrading from a previous version of GVM 21.04.x and older, you will need to follow the PostgreSQL upgrade instructions.
 
 A remote scanner can be found at visiting our [Openvas-Docker Github Repo](https://github.com/NetizenCorp/OpenVAS-Docker).
 
@@ -131,6 +131,7 @@ After everything is complete, go the https://[Host IP Address]/ to access the sc
 
 ## PostgreSQL Upgrade
 If you are upgrade from a previous major version of PostgreSQL 12 or Under, you will need to back up your database and destroy the previous docker container & volume. The new version of GVM uses Postgres version 13. Please follow the steps below to backup, upgrade, and restore your database.
+
 ### AMD64 Based Upgrade
 - Log into the terminal Linux Box hosting the GVM scanner and then type the following commands
 ```bash
@@ -148,14 +149,14 @@ sudo docker image ls #This is find the name of the image and remove the old vers
 sudo docker image rm [image name]
 sudo docker-compose up -d
 ```
-- After starting up the docker image, wait for it to finish before restoring the database. To restore the database file run the following commands:
+- After starting up the docker image, wait for it to load all GVM configs, NVT, SCAP, and CERT data before restoring the database. Use the docker logs command to monitor the progress. To restore the database file run the following commands:
 ```bash
 sudo docker container ls #This is to get the new container ID of the docker image
 sudo docker cp /dumpfile.sql [Container ID]:/
 sudo docker exec -it [container name] bash
 pg_restore -U gvm -d gvmd -c dumpfile.sql
 ```
-After executing that command, wait for the restore function to place all the information back and then log in to verify your data has been restored.
+After executing that command, wait for the restore function to place all the information back. After restoration, restart the docker container and then log in to verify your data has been restored.
 
 ### ARM64 Based Upgrade
 - Log into the terminal Linux Box hosting the GVM scanner and then type the following commands
@@ -174,14 +175,14 @@ sudo docker image ls #This is find the name of the image and remove the old vers
 sudo docker image rm [image name]
 ```
 - Follow the build instructions for [ARM64](https://github.com/NetizenCorp/GVM-Docker/tree/dev#arm-64-bit-operation-system-installation) installation to build and deploy the docker image.
-- After starting up the docker image, wait for it to finish before restoring the database. To restore the database file run the following commands:
+- After starting up the docker image, wait for it to load all GVM configs, NVT, SCAP, and CERT data before restoring the database. Use the docker logs command to monitor the progress. To restore the database file run the following commands:
 ```bash
 sudo docker container ls #This is to get the new container ID of the docker image
 sudo docker cp /dumpfile.sql [Container ID]:/
 sudo docker exec -it [container name] bash
 pg_restore -U gvm -d gvmd -c dumpfile.sql
 ```
-After executing that command, wait for the restore function to place all the information back and then log in to verify your data has been restored.
+After executing that command, wait for the restore function to place all the information back. After restoration, restart the docker container and then log in to verify your data has been restored.
 
 ## Architecture
 
