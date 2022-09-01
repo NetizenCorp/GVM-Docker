@@ -11,7 +11,12 @@ The docker container is based on the latest version of Greenbone Vulnerability M
 
 A remote scanner can be found at visiting our [Openvas-Docker Github Repo](https://github.com/NetizenCorp/OpenVAS-Docker).
 
-## Installation for AMD 64-Bit Based Operating Systems
+## Table of Contents
+- Installation Instructions
+
+## Installation Instructions
+
+### AMD 64-bit Operation System Installation
 First, install required packages, docker, and docker-compose on your linux system. After installation, apply permissions to a user(s) that will use docker. ${USER} is the username of the user(s).
 ```bash
 sudo apt update
@@ -62,7 +67,7 @@ sudo docker logs -f [container name] # Example: docker logs -f gvm-docker_gvm_1
 
 After everything is complete, go the https://[Host IP Address]/ to access the scanner. Use the credentials you provided in the yml file.
 
-## Installation for ARM 64-Bit Based Operating Systems
+### ARM 64-bit Operation System Installation
 First, install docker and docker-compose on your linux system. After installation, apply permissions to a user(s) that will use docker. ${USER} is the username of the user(s).
 ```bash
 sudo apt update
@@ -114,8 +119,36 @@ sudo docker logs -f [container name] # Example: docker logs -f gvm-docker_gvm_1
 ```
 
 After everything is complete, go the https://[Host IP Address]/ to access the scanner. Use the credentials you provided in the yml file.
+
 ## PostgreSQL Upgrade
-If you are upgrade from the the previous version, you will need to back up your database and then destroy the previous docker container and volume. The new version uses Postgres version 13. Please follow the steps below to backup, upgrade, and restore your database.
+If you are upgrade from a previous major version of PostgreSQL 12 or Under, you will need to back up your database and destroy the previous docker container & volume. The new version of GVM uses Postgres version 13. Please follow the steps below to backup, upgrade, and restore your database.
+### AMD64 Based Upgrade
+- Log into the terminal Linux Box hosting the GVM scanner and then type the following commands
+```bash
+sudo docker exec -it [container name] bash
+pg_dump -U postgres -d gvmd --role gvm -n public --blobs --format=c -f "dumpfile.sql"
+exit
+sudo docker container ls
+```
+- Copy the container ID of the GVM scanner to use for the docker copy
+```bash
+sudo docker cp [Container ID]:/dumpfile.sql ~/dumpfile.sql
+sudo docker container stop [Container name]
+sudo docker rm [Container name] #This will remove the container and volume
+sudo docker image ls #This is find the name of the image and remove the old version
+sudo docker image rm [image name]
+sudo docker-compose up -d
+```
+- After starting up the docker image, wait for it to finish before restoring the database. To restore the database file run the following commands:
+```bash
+sudo docker container ls #This is to get the new container ID of the docker image
+sudo docker cp /dumpfile.sql [Container ID]:/
+sudo docker exec -it [container name] bash
+pg_restore -U gvm -d gvmd -c dumpfile.sql
+```
+After executing that command, wait for the restore function to place all the information back and then log in to verify your data has been restored.
+
+### ARM64 Based Upgrade
 - Log into the terminal Linux Box hosting the GVM scanner and then type the following commands
 ```bash
 sudo docker exec -it [container name] bash
