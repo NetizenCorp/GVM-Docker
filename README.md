@@ -67,7 +67,6 @@ First, install docker and docker-compose on your linux system. After installatio
 ```bash
 sudo apt update
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common docker.io docker-compose
-sudo usermod -aG docker ${USER}
 ```
 Next, create a directory, clone the GitHub Repository, and Build the Docker Image. Note: The building process will take time to complete.
 ```bash
