@@ -160,7 +160,7 @@ RUN curl -f -L https://github.com/greenbone/notus-scanner/archive/refs/tags/v$NO
     curl -f -L https://github.com/greenbone/notus-scanner/releases/download/v$NOTUS_VERSION/notus-scanner-$NOTUS_VERSION.tar.gz.asc -o $SOURCE_DIR/notus-scanner-$NOTUS_VERSION.tar.gz.asc && \
     tar -C $SOURCE_DIR -xvzf $SOURCE_DIR/notus-scanner-$NOTUS_VERSION.tar.gz && \
     cd $SOURCE_DIR/notus-scanner-$NOTUS_VERSION && \
-    python3 -m pip install . --prefix=$INSTALL_PREFIX --no-warn-script-location 
+    python3 -m pip install . --no-warn-script-location 
     
     #
     # Install Greenbone Vulnerability Management Python Library
