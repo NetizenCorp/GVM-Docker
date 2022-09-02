@@ -130,7 +130,7 @@ sudo docker logs -f [container name] # Example: docker logs -f gvm-docker_gvm_1
 After everything is complete, go the https://[Host IP Address]/ to access the scanner. Use the credentials you provided in the yml file.
 
 ## PostgreSQL Upgrade
-If you are upgrade from a previous major version of PostgreSQL 12 or Under, you will need to back up your database and destroy the previous docker container & volume. The new version of GVM uses Postgres version 13. Please follow the steps below to backup, upgrade, and restore your database.
+If you are upgrading from a previous major version of PostgreSQL 12 or Under, you will need to upgrade your database before installation. The instructions below will guide you through the upgrade by doing a back up of your database, recreating the docker image, and restoring the backup. The new version of GVM uses Postgres version 13. Please follow the steps below based on your operating system version.
 
 ### AMD64 Based Upgrade
 - Log into the terminal Linux Box hosting the GVM scanner and then type the following commands
