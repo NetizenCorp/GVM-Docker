@@ -102,6 +102,7 @@ if [ ! -f "/firstrun" ]; then
 #	
 #	chown gvm:gvm -R /usr/local/var/run
 	mkdir -p /run/gvmd
+	mkdir -p /var/lib/notus
 	mkdir -p /var/lib/gvm
 	mkdir -p /var/lib/gvm/CA
 	mkdir -p /var/lib/gvm/cert-data
@@ -123,6 +124,7 @@ if [ ! -f "/firstrun" ]; then
 	chown -R gvm:gvm /var/lib/openvas
 	chown -R gvm:gvm /var/log/gvm
 	chown -R gvm:gvm /run/gvmd
+	chown -R gvm:gvm /var/lib/notus
 
 	chmod -R g+srw /var/lib/gvm
 	chmod -R g+srw /var/lib/openvas
@@ -130,6 +132,11 @@ if [ ! -f "/firstrun" ]; then
 	
 	chown -R gvm:gvm /usr/local/sbin/gvmd
 	chmod -R 6750 /usr/local/sbin/gvmd
+	
+	chown gvm:gvm /usr/local/bin/greenbone-nvt-sync
+	chmod 740 /usr/local/sbin/greenbone-feed-sync
+	chown gvm:gvm /usr/local/sbin/greenbone-*-sync
+	chmod 740 /usr/local/sbin/greenbone-*-sync
 
 	touch /firstrun 
 fi
