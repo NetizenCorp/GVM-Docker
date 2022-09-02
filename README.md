@@ -15,7 +15,7 @@ A remote scanner can be found at visiting our [Openvas-Docker Github Repo](https
 - Installation Instructions
   - [AMD 64-Bit Installation](https://github.com/NetizenCorp/GVM-Docker/tree/dev#amd-64-bit-operation-system-installation)
   - [ARM 64-Bit Installation](https://github.com/NetizenCorp/GVM-Docker/tree/dev#arm-64-bit-operation-system-installation)
-- [PostgreSQL](https://github.com/NetizenCorp/GVM-Docker/tree/dev#postgresql-upgrade)
+- [PostgreSQL Upgrade Instructions](https://github.com/NetizenCorp/GVM-Docker/tree/dev#postgresql-upgrade)
   - [AMD64 Database Upgrade](https://github.com/NetizenCorp/GVM-Docker/tree/dev#amd64-based-upgrade)
   - [ARM64 Database Upgrade](https://github.com/NetizenCorp/GVM-Docker/tree/dev#arm64-based-upgrade)
 - [Architecture](https://github.com/NetizenCorp/GVM-Docker/tree/dev#architecture)
