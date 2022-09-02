@@ -114,8 +114,10 @@ if [ ! -f "/firstrun" ]; then
 	
 	mkdir -p /run/ospd/
 	mkdir -p /run/gsad/
+	mkdir -p /run/notus-scanner/
 	chown -R gvm:gvm /run/ospd
 	chown -R gvm:gvm /run/gsad
+	chown -R gvm:gvm /run/notus-scanner
 	su -c "touch /run/ospd/feed-update.lock" gvm
 	mkdir -p /var/lib/openvas/plugins/
 	chown -R gvm:gvm /var/lib/openvas/plugins/
@@ -199,8 +201,6 @@ if [ ! -d /var/lib/gvm/CA ] || [ ! -d /var/lib/gvm/private ] || [ ! -d /var/lib/
 	chown gvm:gvm -R /var/lib/gvm/
 fi
 
-
-
 # Sync NVTs, CERT data, and SCAP data on container start
 if [ "$AUTO_SYNC" = true ] || [ ! -f "/firstsync" ]; then
 	# Sync NVTs, CERT data, and SCAP data on container start
@@ -239,6 +239,9 @@ ospd-openvas --log-file /var/log/gvm/ospd-openvas.log --unix-socket /run/ospd/os
 while  [ ! -S /run/ospd/ospd-openvas.sock ]; do
 	sleep 1
 done
+
+echo "Starting Notus Scanner..."
+/usr/local/bin/notus-scanner --products-directory /var/lib/notus/products --log-file /var/log/gvm/notus-scanner.log
 
 echo "Creating OSPd socket link from old location..."
 rm -rf /tmp/ospd.sock
