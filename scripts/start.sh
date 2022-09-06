@@ -139,6 +139,10 @@ if [ ! -f "/firstrun" ]; then
 	chmod 740 /usr/local/sbin/greenbone-feed-sync
 	chown gvm:gvm /usr/local/sbin/greenbone-*-sync
 	chmod 740 /usr/local/sbin/greenbone-*-sync
+	
+	setcap cap_net_raw,cap_net_admin+eip /usr/local/sbin/openvas
+	# allow nmap to run UDP propes without root permissions
+	setcap cap_net_raw,cap_net_admin,cap_net_bind_service+eip /usr/bin/nmap
 
 	touch /firstrun 
 fi
