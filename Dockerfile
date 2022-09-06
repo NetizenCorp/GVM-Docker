@@ -175,12 +175,6 @@ RUN pip3 install python-gvm==$python_gvm_version
 RUN python3 -m pip install gvm-tools && \
     echo "/usr/local/lib" > /etc/ld.so.conf.d/openvas.conf && ldconfig
 
-# allow openvas to access raw sockets and all kind of network related tasks
-RUN setcap cap_net_raw,cap_net_admin+eip /usr/local/sbin/openvas
-# allow nmap to send e.g. UDP or TCP SYN probes without root permissions
-ENV NMAP_PRIVILEGED=1
-RUN setcap cap_net_raw,cap_net_admin,cap_net_bind_service+eip /usr/bin/nmap
-
 COPY report_formats/* /report_formats/
 
 COPY greenbone-feed-sync-patch.txt /greenbone-feed-sync-patch.txt
