@@ -37,6 +37,7 @@ libmicrohttpd-dev \
 libpaho-mqtt-dev \
 libnet1-dev \
 libpcap-dev \
+libcap2-bin \
 libpopt-dev \
 libpq-dev \
 libradcli-dev \
