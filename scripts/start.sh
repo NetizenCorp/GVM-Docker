@@ -12,7 +12,6 @@ HTTPS=${HTTPS:-true}
 TZ=${TZ:-UTC}
 SSHD=${SSHD:-false}
 DB_PASSWORD=${DB_PASSWORD:-none}
-#FIRST=${FIRST:-false}
 
 crontab cronsettings.txt
 cron start
@@ -86,21 +85,8 @@ if [ ! -f "/firstrun" ]; then
 	useradd -r -M -d /var/lib/gvm -U -G sudo -s /bin/bash gvm || echo "User already exists"
 	usermod -aG tty gvm
 	usermod -aG sudo gvm
-#	useradd --home-dir /home/gvm gvm
-#	
-#	chown gvm:gvm -R /usr/local/share/openvas
-#	chown gvm:gvm -R /usr/local/var/lib/openvas
-#	
-#	chown gvm:gvm -R /usr/local/share/gvm
-#	
-#	mkdir /usr/local/var/lib/gvm/cert-data
-#	
-#	chown gvm:gvm -R /usr/local/var/lib/gvm
-#	chmod 770 -R /usr/local/var/lib/gvm
-#	
-#	chown gvm:gvm -R /usr/local/var/log/gvm
-#	
-#	chown gvm:gvm -R /usr/local/var/run
+	
+	echo "Creating Directories..."
 	mkdir -p /run/gvmd
 	mkdir -p /var/lib/notus
 	mkdir -p /var/lib/gvm
@@ -110,24 +96,25 @@ if [ ! -f "/firstrun" ]; then
 	mkdir -p /var/lib/gvm/gvmd
 	mkdir -p /var/lib/gvm/private
 	mkdir -p /var/lib/gvm/scap-data
-	chown gvm:gvm -R /var/lib/gvm
-	
 	mkdir -p /run/ospd/
 	mkdir -p /run/gsad/
 	mkdir -p /run/notus-scanner/
+	mkdir -p /var/lib/openvas/plugins/
+	
+	echo "Assigning Directory Permissions..."
+	chown -R gvm:gvm /var/lib/gvm
 	chown -R gvm:gvm /run/ospd
 	chown -R gvm:gvm /run/gsad
 	chown -R gvm:gvm /run/notus-scanner
 	su -c "touch /run/ospd/feed-update.lock" gvm
-	mkdir -p /var/lib/openvas/plugins/
 	chown -R gvm:gvm /var/lib/openvas/plugins/
-	
 	chown -R gvm:gvm /var/lib/gvm
 	chown -R gvm:gvm /var/lib/openvas
 	chown -R gvm:gvm /var/log/gvm
 	chown -R gvm:gvm /run/gvmd
 	chown -R gvm:gvm /var/lib/notus
-
+	
+	# Adjusting permissions
 	chmod -R g+srw /var/lib/gvm
 	chmod -R g+srw /var/lib/openvas
 	chmod -R g+srw /var/log/gvm
