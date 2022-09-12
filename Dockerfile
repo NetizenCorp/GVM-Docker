@@ -12,10 +12,10 @@ ENV GVM_LIBS_VERSION="22.4.0" \
     GVMD_VERSION="22.4.0" \
     GSA_VERSION="22.4.0" \
     GSAD_VERSION="22.4.0" \
-    gvm_tools_version="22.6.1" \
+    gvm_tools_version="22.9.0" \
     OPENVAS_SMB_VERSION="22.4.0" \
     OSPD_OPENVAS_VERSION="22.4.2" \
-    python_gvm_version="22.6.1" \
+    python_gvm_version="22.9.0" \
     PG_GVM_VERSION="22.4.0" \
     NOTUS_VERSION="22.4.1" \
     INSTALL_PREFIX="/usr/local" \
@@ -134,7 +134,7 @@ RUN curl -f -L https://github.com/greenbone/openvas-scanner/archive/refs/tags/v$
     mkdir -p $BUILD_DIR/openvas-scanner && cd $BUILD_DIR/openvas-scanner && \
     cmake $SOURCE_DIR/openvas-scanner-$OPENVAS_SCANNER_VERSION \
         -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
-        -DCMAKE_BUILD_TYPE=Release \
+        # -DCMAKE_BUILD_TYPE=Release \
         -DSYSCONFDIR=/etc \
         -DLOCALSTATEDIR=/var \
         -DOPENVAS_FEED_LOCK_PATH=/var/lib/openvas/feed-update.lock \
