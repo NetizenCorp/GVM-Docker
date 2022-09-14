@@ -77,9 +77,11 @@ smbclient \
 snmp \
 socat \
 sshpass \
+sudo \
 texlive-fonts-recommended \
 texlive-latex-extra \
 uuid-dev \
+vim \
 wget \
 xml-twig-tools \
 xmlstarlet \
