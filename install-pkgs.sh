@@ -10,6 +10,7 @@ curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 
 apt-get update
 
+INSTALL_PKGS="
 bison \
 build-essential \
 cmake \
