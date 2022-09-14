@@ -100,6 +100,7 @@ if [ ! -f "/firstrun" ]; then
 	mkdir -p /run/gsad/
 	mkdir -p /run/notus-scanner/
 	mkdir -p /var/lib/openvas/plugins/
+	mkdir -p /var/lib/notus/products/
 	
 	echo "Assigning Directory Permissions..."
 	chown -R gvm:gvm /var/lib/gvm
@@ -113,6 +114,7 @@ if [ ! -f "/firstrun" ]; then
 	chown -R gvm:gvm /var/log/gvm
 	chown -R gvm:gvm /run/gvmd
 	chown -R gvm:gvm /var/lib/notus
+	chown -R gvm:gvm /var/lib/notus/products
 	
 	# Adjusting permissions
 	chmod -R g+srw /var/lib/gvm
