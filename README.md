@@ -33,8 +33,8 @@ sudo apt install -y apt-transport-https ca-certificates curl software-properties
 ```
 Next, create a directory and download the docker-compose.yml file from github.
 ```bash
-mkdir -p /home/$USER/docker/gvm-docker
-cd /home/$USER/docker/gvm-docker
+mkdir -p /home/$USER/gvm-docker
+cd /home/$USER/gvm-docker
 wget https://raw.githubusercontent.com/NetizenCorp/GVM-Docker/main/docker-compose.yml
 ```
 Next, you will modify the docker-compose.yml file using your preferred editor (nano or vim).
@@ -51,7 +51,7 @@ services:
           - gvm-data:/data              # DO NOT MODIFY
         environment:
           - USERNAME="admin"            # You can leave the username as admin or change to what ever you like
-          - PASSWORD="admin"            # Please use 10+ Characters consisting of numbers, lower & uppercase letters. Special Characters can break the login.
+          - PASSWORD="admin"            # Please use 15+ Characters consisting of numbers, lower & uppercase letters, and a special character.
           - HTTPS=true                  # DO NOT MODIFY
           - TZ="ETC"                    # Change to your corresponding timezone
           - SSHD=true                   # Mark true if using a Remote Scanner. Mark false if using a standalone operation.
