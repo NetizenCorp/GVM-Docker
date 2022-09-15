@@ -31,7 +31,7 @@ RUN mkdir -p $SOURCE_DIR && \
     #
     
 RUN cd $SOURCE_DIR && \
-	git clone --branch $GVM_LIBS_VERSION https://github.com/greenbone/gvm-libs.git && \
+    git clone --branch $GVM_LIBS_VERSION https://github.com/greenbone/gvm-libs.git && \
     mkdir -p $BUILD_DIR/gvm-libs && cd $BUILD_DIR/gvm-libs && \
     cmake $SOURCE_DIR/gvm-libs \
         -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
@@ -46,7 +46,7 @@ RUN cd $SOURCE_DIR && \
     #    
     
 RUN cd $SOURCE_DIR && \
-	git clone --branch $GVMD_VERSION https://github.com/greenbone/gvmd.git && \
+    git clone --branch $GVMD_VERSION https://github.com/greenbone/gvmd.git && \
     mkdir -p $BUILD_DIR/gvmd && cd $BUILD_DIR/gvmd && \
     cmake $SOURCE_DIR/gvmd \
         -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
@@ -67,7 +67,7 @@ RUN cd $SOURCE_DIR && \
     #    
     
 RUN cd $SOURCE_DIR && \
-	git clone --branch $PG_GVM_VERSION https://github.com/greenbone/pg-gvm.git && \
+    git clone --branch $PG_GVM_VERSION https://github.com/greenbone/pg-gvm.git && \
     mkdir -p $BUILD_DIR/pg-gvm && cd $BUILD_DIR/pg-gvm && \
     cmake $SOURCE_DIR/pg-gvm \
         -DCMAKE_BUILD_TYPE=Release && \
@@ -79,7 +79,7 @@ RUN cd $SOURCE_DIR && \
     #
     
 RUN cd $SOURCE_DIR && \
-	git clone --branch $GSA_VERSION https://github.com/greenbone/gsa.git && \
+    git clone --branch $GSA_VERSION https://github.com/greenbone/gsa.git && \
     cd $SOURCE_DIR/gsa && \
     rm -rf build && \
     yarnpkg && \
@@ -92,7 +92,7 @@ RUN cd $SOURCE_DIR && \
     #
     
 RUN cd $SOURCE_DIR && \
-	git clone --branch $GSAD_VERSION https://github.com/greenbone/gsad.git && \
+    git clone --branch $GSAD_VERSION https://github.com/greenbone/gsad.git && \
     mkdir -p $BUILD_DIR/gsad && cd $BUILD_DIR/gsad && \
     cmake $SOURCE_DIR/gsad \
         -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
@@ -110,7 +110,7 @@ RUN cd $SOURCE_DIR && \
     #
     
 RUN cd $SOURCE_DIR && \
-	git clone --branch $OPENVAS_SMB_VERSION https://github.com/greenbone/openvas-smb.git && \
+    git clone --branch $OPENVAS_SMB_VERSION https://github.com/greenbone/openvas-smb.git && \
     mkdir -p $BUILD_DIR/openvas-smb && cd $BUILD_DIR/openvas-smb && \
     cmake $SOURCE_DIR/openvas-smb \
         -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
@@ -123,7 +123,7 @@ RUN cd $SOURCE_DIR && \
     #
     
 RUN cd $SOURCE_DIR && \
-	git clone --branch $OPENVAS_SCANNER_VERSION https://github.com/greenbone/openvas-scanner.git && \
+    git clone --branch $OPENVAS_SCANNER_VERSION https://github.com/greenbone/openvas-scanner.git && \
     mkdir -p $BUILD_DIR/openvas-scanner && cd $BUILD_DIR/openvas-scanner && \
     cmake $SOURCE_DIR/openvas-scanner \
         -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
@@ -140,7 +140,7 @@ RUN cd $SOURCE_DIR && \
     #
     
 RUN cd $SOURCE_DIR && \
-	git clone --branch $OSPD_OPENVAS_VERSION https://github.com/greenbone/ospd-openvas.git && \
+    git clone --branch $OSPD_OPENVAS_VERSION https://github.com/greenbone/ospd-openvas.git && \
     cd $SOURCE_DIR/ospd-openvas && \
     python3 -m pip install . --no-warn-script-location
     
@@ -149,7 +149,7 @@ RUN cd $SOURCE_DIR && \
     #
     
 RUN cd $SOURCE_DIR && \
-	git clone --branch $NOTUS_VERSION https://github.com/greenbone/notus-scanner.git && \
+    git clone --branch $NOTUS_VERSION https://github.com/greenbone/notus-scanner.git && \
     cd $SOURCE_DIR/notus-scanner && \
     python3 -m pip install . --no-warn-script-location 
     
