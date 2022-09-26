@@ -12,7 +12,6 @@ HTTPS=${HTTPS:-true}
 TZ=${TZ:-UTC}
 SSHD=${SSHD:-false}
 DB_PASSWORD=${DB_PASSWORD:-none}
-#FIRST=${FIRST:-false}
 
 crontab cronsettings.txt
 cron start
@@ -39,6 +38,10 @@ while  [ "${X}" != "PONG" ]; do
 done
 echo "Redis ready."
 
+echo "Starting Mosquitto..."
+/usr/sbin/mosquitto &
+echo "mqtt_server_uri = localhost:1883" | tee -a /etc/openvas/openvas.conf
+
 
 if  [ ! -d /data ]; then
 	echo "Creating Data folder..."
@@ -49,13 +52,13 @@ if  [ ! -d /data/database ]; then
 	echo "Creating Database folder..."
 	mkdir /data/database
 	chown postgres:postgres -R /data/database
-	su -c "/usr/lib/postgresql/12/bin/initdb /data/database" postgres
+	su -c "/usr/lib/postgresql/13/bin/initdb /data/database" postgres
 fi
 
 chown postgres:postgres -R /data/database
 
 echo "Starting PostgreSQL..."
-su -c "/usr/lib/postgresql/12/bin/pg_ctl -D /data/database start" postgres
+su -c "/usr/lib/postgresql/13/bin/pg_ctl -D /data/database start" postgres
 
 if  [ ! -d /data/ssh ]; then
 	echo "Creating SSH folder..."
@@ -79,24 +82,13 @@ if [ ! -f "/firstrun" ]; then
 	ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 	echo "Creating Greenbone Vulnerability system user..."
-	useradd -r -M -d /var/lib/gvm -U -G sudo -s /bin/bash gvm
+	useradd -r -M -d /var/lib/gvm -U -G sudo -s /bin/bash gvm || echo "User already exists"
 	usermod -aG tty gvm
 	usermod -aG sudo gvm
-#	useradd --home-dir /home/gvm gvm
-#	
-#	chown gvm:gvm -R /usr/local/share/openvas
-#	chown gvm:gvm -R /usr/local/var/lib/openvas
-#	
-#	chown gvm:gvm -R /usr/local/share/gvm
-#	
-#	mkdir /usr/local/var/lib/gvm/cert-data
-#	
-#	chown gvm:gvm -R /usr/local/var/lib/gvm
-#	chmod 770 -R /usr/local/var/lib/gvm
-#	
-#	chown gvm:gvm -R /usr/local/var/log/gvm
-#	
-#	chown gvm:gvm -R /usr/local/var/run
+	
+	echo "Creating Directories..."
+	mkdir -p /run/gvmd
+	mkdir -p /var/lib/notus
 	mkdir -p /var/lib/gvm
 	mkdir -p /var/lib/gvm/CA
 	mkdir -p /var/lib/gvm/cert-data
@@ -104,27 +96,39 @@ if [ ! -f "/firstrun" ]; then
 	mkdir -p /var/lib/gvm/gvmd
 	mkdir -p /var/lib/gvm/private
 	mkdir -p /var/lib/gvm/scap-data
-	chown gvm:gvm -R /var/lib/gvm
-	
 	mkdir -p /run/ospd/
 	mkdir -p /run/gsad/
+	mkdir -p /run/notus-scanner/
+	mkdir -p /var/lib/openvas/plugins/
+	mkdir -p /var/lib/notus/products/
+	
+	echo "Assigning Directory Permissions..."
+	chown -R gvm:gvm /var/lib/gvm
 	chown -R gvm:gvm /run/ospd
 	chown -R gvm:gvm /run/gsad
+	chown -R gvm:gvm /run/notus-scanner
 	su -c "touch /run/ospd/feed-update.lock" gvm
-	mkdir -p /var/lib/openvas/plugins/
 	chown -R gvm:gvm /var/lib/openvas/plugins/
-	
 	chown -R gvm:gvm /var/lib/gvm
 	chown -R gvm:gvm /var/lib/openvas
 	chown -R gvm:gvm /var/log/gvm
 	chown -R gvm:gvm /run/gvmd
-
+	chown -R gvm:gvm /var/lib/notus
+	chown -R gvm:gvm /var/lib/notus/products
+	chown -R gvm:gvm /usr/bin/nmap
+	
+	# Adjusting permissions
 	chmod -R g+srw /var/lib/gvm
 	chmod -R g+srw /var/lib/openvas
 	chmod -R g+srw /var/log/gvm
 	
 	chown -R gvm:gvm /usr/local/sbin/gvmd
 	chmod -R 6750 /usr/local/sbin/gvmd
+	
+	chown gvm:gvm /usr/local/bin/greenbone-nvt-sync
+	chmod 740 /usr/local/sbin/greenbone-feed-sync
+	chown gvm:gvm /usr/local/sbin/greenbone-*-sync
+	chmod 740 /usr/local/sbin/greenbone-*-sync
 
 	touch /firstrun 
 fi
@@ -147,7 +151,7 @@ if [ ! -f "/data/firstrun" ]; then
 	
 	chown postgres:postgres -R /data/database
 	
-	su -c "/usr/lib/postgresql/12/bin/pg_ctl -D /data/database restart" postgres
+	su -c "/usr/lib/postgresql/13/bin/pg_ctl -D /data/database restart" postgres
 	
 	touch /data/firstrun
 fi
@@ -158,11 +162,6 @@ if [ ! -f "/data/upgrade_to_21.4.0" ]; then
 	su -c "psql --dbname=gvmd --command='UPDATE vt_severities SET score = round((score / 10.0)::numeric, 1);'" postgres
 	su -c "psql --dbname=gvmd --command='ALTER TABLE vt_severities OWNER TO gvm;'" postgres
 	touch /data/upgrade_to_21.4.0
-fi
-
-if [ ! -d "/run/gvmd" ]; then
-	mkdir -p /run/gvmd
-	chown gvm:gvm -R /run/gvmd/
 fi
 
 su -c "gvmd --migrate" gvm
@@ -191,8 +190,6 @@ if [ ! -d /var/lib/gvm/CA ] || [ ! -d /var/lib/gvm/private ] || [ ! -d /var/lib/
 
 	chown gvm:gvm -R /var/lib/gvm/
 fi
-
-
 
 # Sync NVTs, CERT data, and SCAP data on container start
 if [ "$AUTO_SYNC" = true ] || [ ! -f "/firstsync" ]; then
@@ -232,6 +229,9 @@ ospd-openvas --log-file /var/log/gvm/ospd-openvas.log --unix-socket /run/ospd/os
 while  [ ! -S /run/ospd/ospd-openvas.sock ]; do
 	sleep 1
 done
+
+echo "Starting Notus Scanner..."
+/usr/local/bin/notus-scanner --products-directory /var/lib/notus/products --log-file /var/log/gvm/notus-scanner.log
 
 echo "Creating OSPd socket link from old location..."
 rm -rf /tmp/ospd.sock

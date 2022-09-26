@@ -4,8 +4,9 @@ apt-get update
 
 apt-get install -y gnupg curl apt-utils ca-certificates wget
 
-echo "deb http://apt.postgresql.org/pub/repos/apt focal-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-wget -qO https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+echo "deb http://apt.postgresql.org/pub/repos/apt jammy-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+# wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 
 apt-get update
 
@@ -17,12 +18,15 @@ cron \
 curl \
 dpkg \
 fakeroot \
+git \
 gcc-mingw-w64 \
+gcc \
 gnupg \
 gnutls-bin \
 gpgsm \
 heimdal-dev \
 libgcrypt20-dev \
+libjson-glib-dev \
 libglib2.0-dev \
 libgnutls28-dev \
 libgpgme-dev \
@@ -31,15 +35,19 @@ libical-dev \
 libksba-dev \
 libldap2-dev \
 libmicrohttpd-dev \
+libpaho-mqtt-dev \
 libnet1-dev \
 libpcap-dev \
+libcap2-bin \
 libpopt-dev \
 libpq-dev \
 libradcli-dev \
 libsnmp-dev \
 libssh-gcrypt-dev \
+libbsd-dev \
 libunistring-dev \
 libxml2-dev \
+mosquitto \
 nano \
 nmap \
 nsis \
@@ -47,8 +55,8 @@ openssh-client \
 openssh-server \
 perl-base \
 pkg-config \
-postgresql-server-dev-12 \
-postgresql-12 \
+postgresql-server-dev-13 \
+postgresql-13 \
 postfix \
 python3 \
 python3-cffi \
@@ -62,6 +70,7 @@ python3-psutil \
 python3-redis \
 python3-setuptools \
 python3-wrapt \
+python3-paho-mqtt \
 redis-server \
 rpm \
 rsync \
@@ -69,9 +78,11 @@ smbclient \
 snmp \
 socat \
 sshpass \
+sudo \
 texlive-fonts-recommended \
 texlive-latex-extra \
 uuid-dev \
+vim \
 wget \
 xml-twig-tools \
 xmlstarlet \
