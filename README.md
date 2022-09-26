@@ -46,7 +46,7 @@ Edit the yml file with your preferences. NOTE: Netizen is not responsible for an
 version: "3.1"
 services:
     gvm:
-        image: netizensoc/gvm-scanner:[latest|dev] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image.
+        image: netizensoc/gvm-scanner:[latest|dev|stable] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image. Stable is the previous stable release.
         volumes:
           - gvm-data:/data              # DO NOT MODIFY
         environment:
@@ -86,7 +86,7 @@ Next, create a directory, clone the GitHub Repository, and Build the Docker Imag
 ```bash
 mkdir -p /home/$USER/docker/
 cd /home/$USER/docker/
-git clone https://github.com/NetizenCorp/GVM-Docker.git
+git clone --branch main https://github.com/NetizenCorp/GVM-Docker.git
 cd GVM-Docker/
 sudo docker build . -t gvm
 ```
@@ -196,6 +196,7 @@ The key points to take away from the diagram below, is the way our setup establi
 | --------- | ------------------------ |
 | latest    | Latest stable version    |
 | dev       | Latest development build |
+| stable    | Old stable version       |
 
 ## Estimated Hardware Requirements
 
