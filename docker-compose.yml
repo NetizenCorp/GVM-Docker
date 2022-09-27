@@ -6,7 +6,7 @@ services:
           - gvm-data:/data              # DO NOT MODIFY
         environment:
           - USERNAME="admin"            # You can leave the username as admin or change to what ever you like
-          - PASSWORD="admin"            # Please use 10+ Characters consisting of numbers, lower & uppercase letters. Special Characters can break the login.
+          - PASSWORD="admin"            # Please use 10+ Characters consisting of numbers, lower & uppercase letters, and a special character.
           - HTTPS=true                  # DO NOT MODIFY
           - TZ="ETC"                    # Change to your corresponding timezone
           - SSHD=true                   # Mark true if using a Remote Scanner. Mark false if using a standalone operation.
