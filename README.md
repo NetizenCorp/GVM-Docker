@@ -145,6 +145,8 @@ sudo docker container ls
 sudo docker cp [Container ID]:/dumpfile.sql ~/dumpfile.sql
 sudo docker container stop [Container name]
 sudo docker rm [Container name] #This will remove the container and volume
+sudo docker volume ls #This will list the previos volume used for that docker image
+sudo docker volume rm [Volume name] #This will delete the old volume.
 sudo docker image ls #This is find the name of the image and remove the old version
 sudo docker image rm [image name]
 sudo docker-compose up -d
