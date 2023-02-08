@@ -18,11 +18,14 @@ cron start
 
 if [ ! -d "/run/redis" ]; then
 	mkdir /run/redis
+	cp /redis-openvas.conf /etc/redis
+	chown redis:redis /etc/redis/redis-openvas.conf
+	echo "db_address = /run/redis/redis.sock" | tee -a /etc/openvas/openvas.conf
 fi
-if  [ -S /run/redis/redis.sock ]; then
+if  [ -S /run/redis/redis-op.sock ]; then
         rm /run/redis/redis.sock
 fi
-redis-server --unixsocket /run/redis/redis.sock --unixsocketperm 700 --timeout 0 --databases 65536 --maxclients 4096 --daemonize yes --port 6379 --bind 0.0.0.0
+redis-server /etc/redis/redis-openvas.conf
 
 echo "Wait for redis socket to be created..."
 while  [ ! -S /run/redis/redis.sock ]; do
@@ -40,7 +43,7 @@ echo "Redis ready."
 
 echo "Starting Mosquitto..."
 /usr/sbin/mosquitto &
-echo "mqtt_server_uri = localhost:1883" | tee -a /etc/openvas/openvas.conf
+echo "mqtt_server_uri = localhost:1883\ntable_driven_lsc = yes" | tee -a /etc/openvas/openvas.conf
 
 
 if  [ ! -d /data ]; then
@@ -85,22 +88,16 @@ if [ ! -f "/firstrun" ]; then
 	useradd -r -M -d /var/lib/gvm -U -G sudo -s /bin/bash gvm || echo "User already exists"
 	usermod -aG tty gvm
 	usermod -aG sudo gvm
+	usermod -aG redis gvm
 	
 	echo "Creating Directories..."
 	mkdir -p /run/gvmd
 	mkdir -p /var/lib/notus
 	mkdir -p /var/lib/gvm
-	mkdir -p /var/lib/gvm/CA
-	mkdir -p /var/lib/gvm/cert-data
-	mkdir -p /var/lib/gvm/data-objects/gvmd
-	mkdir -p /var/lib/gvm/gvmd
-	mkdir -p /var/lib/gvm/private
-	mkdir -p /var/lib/gvm/scap-data
 	mkdir -p /run/ospd/
 	mkdir -p /run/gsad/
 	mkdir -p /run/notus-scanner/
-	mkdir -p /var/lib/openvas/plugins/
-	mkdir -p /var/lib/notus/products/
+	mkdir -p /var/lib/openvas/
 	
 	echo "Assigning Directory Permissions..."
 	chown -R gvm:gvm /var/lib/gvm
@@ -108,13 +105,12 @@ if [ ! -f "/firstrun" ]; then
 	chown -R gvm:gvm /run/gsad
 	chown -R gvm:gvm /run/notus-scanner
 	su -c "touch /run/ospd/feed-update.lock" gvm
-	chown -R gvm:gvm /var/lib/openvas/plugins/
+	chown -R gvm:gvm /var/lib/openvas
 	chown -R gvm:gvm /var/lib/gvm
 	chown -R gvm:gvm /var/lib/openvas
 	chown -R gvm:gvm /var/log/gvm
 	chown -R gvm:gvm /run/gvmd
 	chown -R gvm:gvm /var/lib/notus
-	chown -R gvm:gvm /var/lib/notus/products
 	chown -R gvm:gvm /usr/bin/nmap
 	
 	# Adjusting permissions
@@ -125,10 +121,10 @@ if [ ! -f "/firstrun" ]; then
 	chown -R gvm:gvm /usr/local/sbin/gvmd
 	chmod -R 6750 /usr/local/sbin/gvmd
 	
-	chown gvm:gvm /usr/local/bin/greenbone-nvt-sync
-	chmod 740 /usr/local/sbin/greenbone-feed-sync
-	chown gvm:gvm /usr/local/sbin/greenbone-*-sync
-	chmod 740 /usr/local/sbin/greenbone-*-sync
+	chown gvm:gvm /usr/local/bin/greenbone-feed-sync
+	chmod 740 /usr/local/bin/greenbone-feed-sync
+	# chown gvm:gvm /usr/local/sbin/greenbone-*-sync
+	# chmod 740 /usr/local/sbin/greenbone-*-sync
 
 	touch /firstrun 
 fi
