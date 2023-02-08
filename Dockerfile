@@ -7,17 +7,18 @@ COPY install-pkgs.sh /install-pkgs.sh
 
 RUN bash /install-pkgs.sh
 
-ENV GVM_LIBS_VERSION="main" \
-    OPENVAS_SCANNER_VERSION="main" \
-    GVMD_VERSION="main" \
-    GSA_VERSION="main" \
-    GSAD_VERSION="main" \
-    gvm_tools_version="main" \
+ENV GVM_LIBS_VERSION="v24.4.3" \
+    OPENVAS_SCANNER_VERSION="v22.4.1" \
+    GVMD_VERSION="v22.4.2" \
+    GSA_VERSION="v22.4.1" \
+    GSAD_VERSION="v22.4.1" \
+    gvm_tools_version="v23.2.0" \
     OPENVAS_SMB_VERSION="main" \
-    OSPD_OPENVAS_VERSION="main" \
+    OSPD_OPENVAS_VERSION="v22.4.6" \
     python_gvm_version="22.9.0" \
     PG_GVM_VERSION="v22.4.0" \
-    NOTUS_VERSION="main" \
+    NOTUS_VERSION="v22.4.3" \
+    SYNCFEED_VERSION="v23.2.1" \
     INSTALL_PREFIX="/usr/local" \
     SOURCE_DIR="/source" \
     BUILD_DIR="/build" \
@@ -127,7 +128,7 @@ RUN cd $SOURCE_DIR && \
     mkdir -p $BUILD_DIR/openvas-scanner && cd $BUILD_DIR/openvas-scanner && \
     cmake $SOURCE_DIR/openvas-scanner \
         -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
-        # -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_BUILD_TYPE=Release \
         -DSYSCONFDIR=/etc \
         -DLOCALSTATEDIR=/var \
         -DOPENVAS_FEED_LOCK_PATH=/var/lib/openvas/feed-update.lock \
@@ -152,6 +153,15 @@ RUN cd $SOURCE_DIR && \
     git clone --branch $NOTUS_VERSION https://github.com/greenbone/notus-scanner.git && \
     cd $SOURCE_DIR/notus-scanner && \
     python3 -m pip install . --no-warn-script-location 
+    
+    #
+    # Greenbone Feed Sync
+    #
+    
+RUN cd $SOURCE_DIR && \
+    git clone --branch $FEEDSYNC_VERSION https://github.com/greenbone/greenbone-feed-sync.git && \
+    cd $SOURCe_DIR/greenbone-feed-sync && \
+    python3 -m pip install . --no-warn-script-location
     
     #
     # Install Greenbone Vulnerability Management Python Library
@@ -179,6 +189,8 @@ COPY scripts/* /
 RUN chmod +x /*.sh
 
 ENV NMAP_PRIVILEGED=1
+
+RUN setcap cap_net_raw,cap_net_admin+eip /usr/local/sbin/openvas
 
 RUN setcap cap_net_raw,cap_net_admin,cap_net_bind_service+eip /usr/bin/nmap
 
