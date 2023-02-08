@@ -159,7 +159,7 @@ RUN cd $SOURCE_DIR && \
     #
     
 RUN cd $SOURCE_DIR && \
-    git clone --branch $FEEDSYNC_VERSION https://github.com/greenbone/greenbone-feed-sync.git && \
+    git clone --branch $SYNCFEED_VERSION https://github.com/greenbone/greenbone-feed-sync.git && \
     cd $SOURCe_DIR/greenbone-feed-sync && \
     python3 -m pip install . --no-warn-script-location
     
