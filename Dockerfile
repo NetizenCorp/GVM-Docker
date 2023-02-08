@@ -18,7 +18,7 @@ ENV GVM_LIBS_VERSION="main" \
     python_gvm_version="23.2.0" \
     PG_GVM_VERSION="main" \
     NOTUS_VERSION="main" \
-    SYNCFEED_VERSION="main" \
+    SYNC_VERSION="main" \
     INSTALL_PREFIX="/usr/local" \
     SOURCE_DIR="/source" \
     BUILD_DIR="/build" \
@@ -155,11 +155,11 @@ RUN cd $SOURCE_DIR && \
     python3 -m pip install . --no-warn-script-location 
     
     #
-    # Greenbone Feed Sync
+    # Install Greenbone Feed Sync
     #
     
 RUN cd $SOURCE_DIR && \
-    git clone --branch $SYNCFEED_VERSION https://github.com/greenbone/greenbone-feed-sync.git && \
+    git clone --branch $SYNC_VERSION https://github.com/greenbone/greenbone-feed-sync.git && \
     cd $SOURCe_DIR/greenbone-feed-sync && \
     python3 -m pip install . --no-warn-script-location
     
