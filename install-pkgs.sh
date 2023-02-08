@@ -61,6 +61,7 @@ postfix \
 python3 \
 python3-cffi \
 python3-defusedxml \
+python3-gnupg \
 python3-impacket \
 python3-lxml \
 python3-packaging \
