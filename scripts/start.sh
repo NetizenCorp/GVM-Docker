@@ -16,28 +16,25 @@ DB_PASSWORD=${DB_PASSWORD:-none}
 crontab cronsettings.txt
 cron start
 
-if [ ! -d "/run/redis-openvas" ]; then
-	mkdir /run/redis-openvas
-	cp /redis-openvas.conf /etc/redis
-	chown redis:redis /etc/redis/redis-openvas.conf
-	echo "db_address = /run/redis-openvas/redis.sock" | tee -a /etc/openvas/openvas.conf
+if [ ! -d "/run/redis" ]; then
+	mkdir /run/redis
 fi
 if  [ -S /run/redis/redis-op.sock ]; then
-        rm /run/redis-openvas/redis.sock
+        rm /run/redis/redis.sock
 fi
-redis-server --unixsocket /run/redis-openvas/redis.sock --unixsocketperm 700 --timeout 0 --databases 65536 --maxclients 4096 --daemonize yes --port 6379 --bind 0.0.0.0 --save "" --appendonly no
+redis-server --unixsocket /run/redis/redis.sock --unixsocketperm 700 --timeout 0 --databases 65536 --maxclients 4096 --daemonize yes --port 6379 --bind 0.0.0.0 --save "" --appendonly no
 
 echo "Wait for redis socket to be created..."
-while  [ ! -S /run/redis-openvas/redis.sock ]; do
+while  [ ! -S /run/redis/redis.sock ]; do
         sleep 1
 done
 
 echo "Testing redis status..."
-X="$(redis-cli -s /run/redis-openvas/redis.sock ping)"
+X="$(redis-cli -s /run/redis/redis.sock ping)"
 while  [ "${X}" != "PONG" ]; do
         echo "Redis not yet ready..."
         sleep 1
-        X="$(redis-cli -s /run/redis-openvas/redis.sock ping)"
+        X="$(redis-cli -s /run/redis/redis.sock ping)"
 done
 echo "Redis ready."
 
