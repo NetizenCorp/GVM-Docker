@@ -20,24 +20,25 @@ if [ ! -d "/run/redis" ]; then
 	mkdir /run/redis
 	cp /redis-openvas.conf /etc/redis
 	chown redis:redis /etc/redis/redis-openvas.conf
-	echo "db_address = /run/redis/redis.sock" | tee -a /etc/openvas/openvas.conf
+	echo "db_address = /run/redis-openvas/redis.sock" | tee -a /etc/openvas/openvas.conf
 fi
 if  [ -S /run/redis/redis-op.sock ]; then
-        rm /run/redis/redis.sock
+        rm /run/redis-openvas/redis.sock
 fi
-redis-server /etc/redis/redis-openvas.conf
+su -c "systemctl start redis-server@openvas.service" gvm
+su -c "systemctl enable redis-server@openvas.service" gvm
 
 echo "Wait for redis socket to be created..."
-while  [ ! -S /run/redis/redis.sock ]; do
+while  [ ! -S /run/redis-openvas/redis.sock ]; do
         sleep 1
 done
 
 echo "Testing redis status..."
-X="$(redis-cli -s /run/redis/redis.sock ping)"
+X="$(redis-cli -s /run/redis-openvas/redis.sock ping)"
 while  [ "${X}" != "PONG" ]; do
         echo "Redis not yet ready..."
         sleep 1
-        X="$(redis-cli -s /run/redis/redis.sock ping)"
+        X="$(redis-cli -s /run/redis-openvas/redis.sock ping)"
 done
 echo "Redis ready."
 
