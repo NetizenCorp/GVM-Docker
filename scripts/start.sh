@@ -16,8 +16,8 @@ DB_PASSWORD=${DB_PASSWORD:-none}
 crontab cronsettings.txt
 cron start
 
-if [ ! -d "/run/redis" ]; then
-	mkdir /run/redis
+if [ ! -d "/run/redis-openvas" ]; then
+	mkdir /run/redis-openvas
 	cp /redis-openvas.conf /etc/redis
 	chown redis:redis /etc/redis/redis-openvas.conf
 	echo "db_address = /run/redis-openvas/redis.sock" | tee -a /etc/openvas/openvas.conf
