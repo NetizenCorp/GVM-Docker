@@ -25,8 +25,7 @@ fi
 if  [ -S /run/redis/redis-op.sock ]; then
         rm /run/redis-openvas/redis.sock
 fi
-su -c "systemctl start redis-server@openvas.service" root
-su -c "systemctl enable redis-server@openvas.service" root
+redis-server /etc/redis/redis-openvas.conf
 
 echo "Wait for redis socket to be created..."
 while  [ ! -S /run/redis-openvas/redis.sock ]; do
