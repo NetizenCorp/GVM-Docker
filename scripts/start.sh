@@ -25,7 +25,7 @@ fi
 if  [ -S /run/redis/redis-op.sock ]; then
         rm /run/redis-openvas/redis.sock
 fi
-redis-server /etc/redis/redis-openvas.conf
+redis-server --unixsocket /run/redis-openvas/redis.sock --unixsocketperm 700 --timeout 0 --databases 65536 --maxclients 4096 --daemonize yes --port 6379 --bind 0.0.0.0
 
 echo "Wait for redis socket to be created..."
 while  [ ! -S /run/redis-openvas/redis.sock ]; do
