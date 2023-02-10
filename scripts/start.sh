@@ -85,7 +85,6 @@ if [ ! -f "/firstrun" ]; then
 	useradd -r -M -d /var/lib/gvm -U -G sudo -s /bin/bash gvm || echo "User already exists"
 	usermod -aG tty gvm
 	usermod -aG sudo gvm
-	usermod -aG redis gvm
 	
 	echo "Creating Directories..."
 	mkdir -p /run/gvmd
@@ -102,12 +101,13 @@ if [ ! -f "/firstrun" ]; then
 	chown -R gvm:gvm /run/gsad
 	chown -R gvm:gvm /run/notus-scanner
 	su -c "touch /run/ospd/feed-update.lock" gvm
-	chown -R gvm:gvm /var/lib/openvas
+	chown -R gvm:gvm /var/lib/openvas/plugins/
 	chown -R gvm:gvm /var/lib/gvm
 	chown -R gvm:gvm /var/lib/openvas
 	chown -R gvm:gvm /var/log/gvm
 	chown -R gvm:gvm /run/gvmd
 	chown -R gvm:gvm /var/lib/notus
+	chown -R gvm:gvm /var/lib/notus/products
 	chown -R gvm:gvm /usr/bin/nmap
 	
 	# Adjusting permissions
