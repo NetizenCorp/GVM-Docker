@@ -22,7 +22,7 @@ fi
 if  [ -S /run/redis/redis-op.sock ]; then
         rm /run/redis/redis.sock
 fi
-redis-server --unixsocket /run/redis/redis.sock --unixsocketperm 700 --timeout 0 --databases 65536 --maxclients 4096 --daemonize yes --port 6379 --bind 0.0.0.0 --save "" --appendonly no
+redis-server --unixsocket /run/redis/redis.sock --unixsocketperm 770 --timeout 0 --databases 65536 --maxclients 4096 --daemonize yes --port 6379 --bind 0.0.0.0 --save "" --appendonly no
 
 echo "Wait for redis socket to be created..."
 while  [ ! -S /run/redis/redis.sock ]; do
@@ -85,6 +85,7 @@ if [ ! -f "/firstrun" ]; then
 	useradd -r -M -d /var/lib/gvm -U -G sudo -s /bin/bash gvm || echo "User already exists"
 	usermod -aG tty gvm
 	usermod -aG sudo gvm
+	usermod -aG redis gvm
 	
 	echo "Creating Directories..."
 	mkdir -p /run/gvmd
@@ -108,6 +109,7 @@ if [ ! -f "/firstrun" ]; then
 	chown -R gvm:gvm /run/gvmd
 	chown -R gvm:gvm /var/lib/notus
 	chown -R gvm:gvm /usr/bin/nmap
+	chown -R gvm:gvm /run/redis/
 	
 	# Adjusting permissions
 	chmod -R g+srw /var/lib/gvm
