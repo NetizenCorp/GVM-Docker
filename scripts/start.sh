@@ -18,6 +18,7 @@ cron start
 
 if [ ! -d "/run/redis" ]; then
 	mkdir /run/redis
+	echo "db_address = /run/redis/redis.sock" | sudo tee -a /etc/openvas/openvas.conf
 fi
 if  [ -S /run/redis/redis-op.sock ]; then
         rm /run/redis/redis.sock
