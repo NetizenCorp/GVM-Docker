@@ -107,7 +107,6 @@ if [ ! -f "/firstrun" ]; then
 	chown -R gvm:gvm /var/log/gvm
 	chown -R gvm:gvm /run/gvmd
 	chown -R gvm:gvm /var/lib/notus
-	chown -R gvm:gvm /var/lib/notus/products
 	chown -R gvm:gvm /usr/bin/nmap
 	
 	# Adjusting permissions
