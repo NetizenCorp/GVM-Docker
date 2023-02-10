@@ -116,6 +116,8 @@ if [ ! -f "/firstrun" ]; then
 	
 	chown -R gvm:gvm /usr/local/sbin/gvmd
 	chmod -R 6750 /usr/local/sbin/gvmd
+	chown -R gvm:gvm /usr/local/sbin/openvas
+	chmod -R 6750 /usr/local/sbin/openvas
 	
 	chown gvm:gvm /usr/local/bin/greenbone-feed-sync
 	chmod 740 /usr/local/bin/greenbone-feed-sync
