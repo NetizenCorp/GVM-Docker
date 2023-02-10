@@ -143,7 +143,7 @@ RUN cd $SOURCE_DIR && \
 RUN cd $SOURCE_DIR && \
     git clone --branch $OSPD_OPENVAS_VERSION https://github.com/greenbone/ospd-openvas.git && \
     cd $SOURCE_DIR/ospd-openvas && \
-    python3 -m pip install . --no-warn-script-location
+    python3 -m pip install --prefix /usr . --no-warn-script-location
     
     #
     # Install Notus Scanner
@@ -152,7 +152,7 @@ RUN cd $SOURCE_DIR && \
 RUN cd $SOURCE_DIR && \
     git clone --branch $NOTUS_VERSION https://github.com/greenbone/notus-scanner.git && \
     cd $SOURCE_DIR/notus-scanner && \
-    python3 -m pip install . --no-warn-script-location 
+    python3 -m pip install --prefix /usr . --no-warn-script-location 
     
     #
     # Install Greenbone Feed Sync
