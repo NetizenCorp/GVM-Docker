@@ -88,6 +88,7 @@ if [ ! -f "/firstrun" ]; then
 	usermod -aG tty gvm
 	usermod -aG sudo gvm
 	usermod -aG redis gvm
+	echo "%gvm ALL = NOPASSWD: /usr/local/sbin/openvas" >> /etc/sudoers
 	
 	echo "Creating Directories..."
 	mkdir -p /run/gvmd
