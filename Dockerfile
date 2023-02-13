@@ -51,15 +51,15 @@ RUN cd $SOURCE_DIR && \
     mkdir -p $BUILD_DIR/gvmd && cd $BUILD_DIR/gvmd && \
     cmake $SOURCE_DIR/gvmd \
         -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DLOCALSTATEDIR=/var \
-        -DSYSCONFDIR=/etc \
-        -DGVM_DATA_DIR=/var \
-        -DGVMD_RUN_DIR=/run/gvmd \
-        -DOPENVAS_DEFAULT_SOCKET=/run/ospd/ospd-openvas.sock \
-        -DGVM_FEED_LOCK_PATH=/var/lib/gvm/feed-update.lock \
-        -DDEFAULT_CONFIG_DIR=/etc/default \
-        -DLOGROTATE_DIR=/etc/logrotate.d && \
+  	-DCMAKE_BUILD_TYPE=Release \
+  	-DLOCALSTATEDIR=/var \
+  	-DSYSCONFDIR=/etc \
+  	-DGVM_DATA_DIR=/var \
+  	-DGVMD_RUN_DIR=/run/gvmd \
+  	-DOPENVAS_DEFAULT_SOCKET=/run/ospd/ospd-openvas.sock \
+  	-DGVM_FEED_LOCK_PATH=/var/lib/gvm/feed-update.lock \
+  	-DSYSTEMD_SERVICE_DIR=/lib/systemd/system \
+  	-DLOGROTATE_DIR=/etc/logrotate.d && \
     make -j$(nproc) && \
     make install
     
