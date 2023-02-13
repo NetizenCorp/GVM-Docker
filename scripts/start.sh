@@ -84,6 +84,7 @@ if [ ! -f "/firstrun" ]; then
 
 	echo "Creating Greenbone Vulnerability system user..."
 	useradd -r -M -d /var/lib/gvm -U -G sudo -s /bin/bash gvm || echo "User already exists"
+	usermod -aG gvm gvm
 	usermod -aG tty gvm
 	usermod -aG sudo gvm
 	usermod -aG redis gvm
