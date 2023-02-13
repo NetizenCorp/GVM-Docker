@@ -72,6 +72,7 @@ python3-redis \
 python3-setuptools \
 python3-wrapt \
 python3-paho-mqtt \
+python3-venv \
 redis-server \
 rpm \
 rsync \
