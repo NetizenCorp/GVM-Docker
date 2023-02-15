@@ -190,8 +190,6 @@ RUN chmod +x /*.sh
 
 ENV NMAP_PRIVILEGED=1
 
-RUN setcap cap_net_raw,cap_net_admin+eip /usr/local/sbin/openvas
-
 RUN setcap cap_net_raw,cap_net_admin,cap_net_bind_service+eip /usr/bin/nmap
 
 CMD '/start.sh'
