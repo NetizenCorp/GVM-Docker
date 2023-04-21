@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:kinetic
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
