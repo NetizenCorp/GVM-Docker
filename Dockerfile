@@ -178,10 +178,6 @@ RUN python3 -m pip install gvm-tools && \
 
 COPY report_formats/* /report_formats/
 
-# COPY greenbone-feed-sync-patch.txt /greenbone-feed-sync-patch.txt
-
-# RUN patch /usr/local/sbin/greenbone-feed-sync /greenbone-feed-sync-patch.txt
-
 COPY sshd_config /sshd_config
 
 COPY scripts/* /
