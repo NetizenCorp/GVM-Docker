@@ -3,7 +3,7 @@
 Visit out Website: https://www.netizen.net
 
 # Greenbone Vulnerability Manager/Scanner
-## Latest Version: 22.4.6
+## Latest Version: 22.4.1
 ![Docker Pulls](https://img.shields.io/docker/pulls/netizensoc/gvm-scanner?style=plastic)
 ![GitHub](https://img.shields.io/github/license/thecomet28/gvm-docker)
 
@@ -60,6 +60,7 @@ services:
           - "443:9392"  # Web interface
           - "5432:5432" # Access PostgreSQL database from external tools
           - "2222:22"   # SSH for remote sensors. You can remove if you don't plan on using remote scanners.
+          # - "9390:9390" # For GVM API Access. Leave commented if you do not plan on using the API for external web application access.
         restart: unless-stopped # Remove if your using for penetration testing or one-time scans. Only use if using for production/continuous scanning
 volumes:
     gvm-data:
@@ -113,6 +114,7 @@ services:
           - "443:9392"  # Web interface
           - "5432:5432" # Access PostgreSQL database from external tools
           - "2222:22"   # SSH for remote sensors. You can remove if you don't plan on using remote scanners.
+           # - "9390:9390" # For GVM API Access. Leave commented if you do not plan on using the API for external web application access.
         restart: unless-stopped # Remove if your using for penetration testing or one-time scans. Only use if using for production/continuous scanning
 volumes:
     gvm-data:
@@ -206,8 +208,8 @@ The key points to take away from the diagram below, is the way our setup establi
 
 | Hosts              | CPU Cores     | Memory    | Disk Space |
 | :----------------- | :------------ | :-------- | :--------- |
-| 512 active IPs     | 4@2GHz cores  | 8 GB RAM  | 30 GB      |
-| 2,500 active IPs   | 6@2GHz cores  | 12 GB RAM | 60 GB      |
+| 512 active IPs     | 4@2GHz cores  | 8 GB RAM  | 50 GB      |
+| 2,500 active IPs   | 6@2GHz cores  | 12 GB RAM | 100 GB     |
 | 10,000 active IPs  | 8@3GHz cores  | 16 GB RAM | 250 GB     |
 | 25,000 active IPs  | 16@3GHz cores | 32 GB RAM | 1 TB       |
 | 100,000 active IPs | 32@3GHz cores | 64 GB RAM | 2 TB       |
