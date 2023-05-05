@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-echo "Downloading Feed Data..."
-su -c "/usr/local/bin/greenbone-feed-sync" gvm
+echo "Downloading GVM Feed Data..."
+su -c "greenbone-feed-sync -v	--compression-level=9" gvm
