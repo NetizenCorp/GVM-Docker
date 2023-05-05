@@ -17,3 +17,4 @@ MaxSessions 0
 StreamLocalBindUnlink yes
 ClientAliveInterval 10
 ClientAliveCountMax 3
+AuthorizedKeysFile /var/lib/gvm/.ssh/authorized_keys
