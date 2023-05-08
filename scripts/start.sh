@@ -102,7 +102,7 @@ if [ ! -f "/firstrun" ]; then
   	gpg --import-ownertrust < /tmp/ownertrust.txt
 
   	export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg
- 	 mkdir -p $OPENVAS_GNUPG_HOME
+ 	mkdir -p $OPENVAS_GNUPG_HOME
   	cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/
   	chown -R gvm:gvm $OPENVAS_GNUPG_HOME
 
