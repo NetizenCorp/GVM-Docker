@@ -85,33 +85,33 @@ if [ ! -f "/firstrun" ]; then
 	useradd -r -M -U -G sudo -s /bin/bash gvm || echo "User already exists"
 	usermod -aG tty gvm
 	usermod -aG sudo gvm
-  usermod -aG redis gvm
+  	usermod -aG redis gvm
   
-  echo "Importing Greenbone Signing Keys..."
-  curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc
-  gpg --import /tmp/GBCommunitySigningKey.asc
+  	echo "Importing Greenbone Signing Keys..."
+  	curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc
+  	gpg --import /tmp/GBCommunitySigningKey.asc
   
-  echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" > /tmp/ownertrust.txt
-  gpg --import-ownertrust < /tmp/ownertrust.txt
+  	echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" > /tmp/ownertrust.txt
+  	gpg --import-ownertrust < /tmp/ownertrust.txt
 
-  echo "Verifying Signing Keys..."
-  export GNUPGHOME=/tmp/openvas-gnupg
-  mkdir -p $GNUPGHOME
+  	echo "Verifying Signing Keys..."
+  	export GNUPGHOME=/tmp/openvas-gnupg
+  	mkdir -p $GNUPGHOME
 
-  gpg --import /tmp/GBCommunitySigningKey.asc
-  gpg --import-ownertrust < /tmp/ownertrust.txt
+  	gpg --import /tmp/GBCommunitySigningKey.asc
+  	gpg --import-ownertrust < /tmp/ownertrust.txt
 
-  export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg
-  mkdir -p $OPENVAS_GNUPG_HOME
-  cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/
-  chown -R gvm:gvm $OPENVAS_GNUPG_HOME
+  	export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg
+ 	 mkdir -p $OPENVAS_GNUPG_HOME
+  	cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/
+  	chown -R gvm:gvm $OPENVAS_GNUPG_HOME
 
 	echo "Creating Directories..."
 	mkdir -p /var/lib/gvm
-  mkdir -p /run/gvmd
+  	mkdir -p /run/gvmd
 	mkdir -p /var/lib/notus
-  mkdir -p /run/ospd/
-  mkdir -p /run/gsad/
+ 	mkdir -p /run/ospd/
+  	mkdir -p /run/gsad/
 	mkdir -p /run/notus-scanner/
 	mkdir -p /var/lib/openvas/
 	
@@ -158,7 +158,7 @@ if [ ! -f "/data/firstrun" ]; then
 	
 	chown postgres:postgres -R /data/database
 	
-  su -c "/usr/lib/postgresql/13/bin/pg_ctl -D /data/database restart" postgres
+  	su -c "/usr/lib/postgresql/13/bin/pg_ctl -D /data/database restart" postgres
  
 	touch /data/firstrun
 fi
