@@ -82,39 +82,48 @@ if [ ! -f "/firstrun" ]; then
 	ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 	echo "Creating Greenbone Vulnerability system user..."
-	useradd -r -M -d /var/lib/gvm -U -G sudo -s /bin/bash gvm || echo "User already exists"
+	useradd -r -M -U -G sudo -s /bin/bash gvm || echo "User already exists"
 	usermod -aG tty gvm
 	usermod -aG sudo gvm
-	
+  	usermod -aG redis gvm
+  
+  	echo "Importing Greenbone Signing Keys..."
+  	curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc
+  	gpg --import /tmp/GBCommunitySigningKey.asc
+  
+  	echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" > /tmp/ownertrust.txt
+  	gpg --import-ownertrust < /tmp/ownertrust.txt
+
+  	echo "Verifying Signing Keys..."
+  	export GNUPGHOME=/tmp/openvas-gnupg
+  	mkdir -p $GNUPGHOME
+
+  	gpg --import /tmp/GBCommunitySigningKey.asc
+  	gpg --import-ownertrust < /tmp/ownertrust.txt
+
+  	export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg
+ 	mkdir -p $OPENVAS_GNUPG_HOME
+  	cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/
+  	chown -R gvm:gvm $OPENVAS_GNUPG_HOME
+
 	echo "Creating Directories..."
-	mkdir -p /run/gvmd
-	mkdir -p /var/lib/notus
 	mkdir -p /var/lib/gvm
-	mkdir -p /var/lib/gvm/CA
-	mkdir -p /var/lib/gvm/cert-data
-	mkdir -p /var/lib/gvm/data-objects/gvmd
-	mkdir -p /var/lib/gvm/gvmd
-	mkdir -p /var/lib/gvm/private
-	mkdir -p /var/lib/gvm/scap-data
-	mkdir -p /run/ospd/
-	mkdir -p /run/gsad/
+  	mkdir -p /run/gvmd
+	mkdir -p /var/lib/notus
+ 	mkdir -p /run/ospd/
+  	mkdir -p /run/gsad/
 	mkdir -p /run/notus-scanner/
-	mkdir -p /var/lib/openvas/plugins/
-	mkdir -p /var/lib/notus/products/
+	mkdir -p /var/lib/openvas/
 	
 	echo "Assigning Directory Permissions..."
 	chown -R gvm:gvm /var/lib/gvm
 	chown -R gvm:gvm /run/ospd
 	chown -R gvm:gvm /run/gsad
 	chown -R gvm:gvm /run/notus-scanner
-	su -c "touch /run/ospd/feed-update.lock" gvm
-	chown -R gvm:gvm /var/lib/openvas/plugins/
-	chown -R gvm:gvm /var/lib/gvm
 	chown -R gvm:gvm /var/lib/openvas
 	chown -R gvm:gvm /var/log/gvm
 	chown -R gvm:gvm /run/gvmd
 	chown -R gvm:gvm /var/lib/notus
-	chown -R gvm:gvm /var/lib/notus/products
 	chown -R gvm:gvm /usr/bin/nmap
 	
 	# Adjusting permissions
@@ -122,13 +131,11 @@ if [ ! -f "/firstrun" ]; then
 	chmod -R g+srw /var/lib/openvas
 	chmod -R g+srw /var/log/gvm
 	
-	chown -R gvm:gvm /usr/local/sbin/gvmd
-	chmod -R 6750 /usr/local/sbin/gvmd
+	chown gvm:gvm /usr/local/sbin/gvmd
+	chmod 6750 /usr/local/sbin/gvmd
 	
-	chown gvm:gvm /usr/local/bin/greenbone-nvt-sync
-	chmod 740 /usr/local/sbin/greenbone-feed-sync
-	chown gvm:gvm /usr/local/sbin/greenbone-*-sync
-	chmod 740 /usr/local/sbin/greenbone-*-sync
+	chown gvm:gvm /usr/local/bin/greenbone-feed-sync
+	chmod 740 /usr/local/bin/greenbone-feed-sync
 
 	touch /firstrun 
 fi
@@ -151,8 +158,8 @@ if [ ! -f "/data/firstrun" ]; then
 	
 	chown postgres:postgres -R /data/database
 	
-	su -c "/usr/lib/postgresql/13/bin/pg_ctl -D /data/database restart" postgres
-	
+  	su -c "/usr/lib/postgresql/13/bin/pg_ctl -D /data/database restart" postgres
+ 
 	touch /data/firstrun
 fi
 
@@ -170,10 +177,8 @@ if [ $DB_PASSWORD != "none" ]; then
 	su -c "psql --dbname=gvmd --command=\"alter user gvm password '$DB_PASSWORD';\"" postgres
 fi
 
-
 echo "Creating gvmd folder..."
 su -c "mkdir -p /var/lib/gvm/gvmd/report_formats" gvm
-#cp -r /report_formats /var/lib/gvm/gvmd/
 chown gvm:gvm -R /var/lib/gvm
 find /var/lib/gvm/gvmd/report_formats -type f -name "generate" -exec chmod +x {} \;
 
@@ -193,7 +198,6 @@ fi
 
 # Sync NVTs, CERT data, and SCAP data on container start
 if [ "$AUTO_SYNC" = true ] || [ ! -f "/firstsync" ]; then
-	# Sync NVTs, CERT data, and SCAP data on container start
 	/sync-all.sh
 	touch /firstsync
 fi
@@ -245,8 +249,6 @@ until su -c "gvmd --get-users" gvm; do
 	sleep 1
 done
 
-#if [[ ! -f "/var/lib/gvm/.created_gvm_user" || ! -f "/data/created_gvm_user" ]]; then
-#if [ $FIRST == "true" ]; then
 if [ ! -f "/var/lib/gvm/.created_gvm_user" ]; then
 	echo "Creating Greenbone Vulnerability Manager admin user"
 	su -c "gvmd --role=\"Super Admin\" --create-user=\"$USERNAME\" --password=\"$PASSWORD\"" gvm
@@ -271,6 +273,14 @@ else
 	su -c "gsad --verbose --http-only --timeout=$TIMEOUT --no-redirect --mlisten=127.0.0.1 --mport=9390 --port=9392" gvm
 fi
 
+if [ ! -f "/var/lib/gvm/.fixed_db" ]; then
+  echo "Fixing Database Tables..."
+  su -c "psql --dbname=gvmd --command='ALTER TABLE IF EXISTS results ADD COLUMN hash_value VARCHAR;'" postgres
+  su -c "psql --dbname=gvmd --command='ALTER TABLE IF EXISTS report_host_details ADD COLUMN hash_value VARCHAR;'" postgres
+  
+  touch /var/lib/gvm/.fixed_db
+fi
+
 if [ $SSHD == "true" ]; then
 	echo "Starting OpenSSH Server..."
 	if [ ! -d /var/lib/gvm/.ssh ]; then
@@ -288,7 +298,7 @@ if [ $SSHD == "true" ]; then
 	
 	rm -rf /var/run/sshd
 	mkdir -p /var/run/sshd
-	
+	cp /sshd_config /etc/ssh/sshd_config
 	/usr/sbin/sshd -f /sshd_config
 fi
 

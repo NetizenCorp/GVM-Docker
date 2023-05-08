@@ -7,17 +7,18 @@ COPY install-pkgs.sh /install-pkgs.sh
 
 RUN bash /install-pkgs.sh
 
-ENV GVM_LIBS_VERSION="main" \
-    OPENVAS_SCANNER_VERSION="main" \
+ENV GVM_LIBS_VERSION="v22.5.2" \
+    OPENVAS_SCANNER_VERSION="v22.6.1" \
     GVMD_VERSION="main" \
     GSA_VERSION="main" \
-    GSAD_VERSION="main" \
-    gvm_tools_version="main" \
-    OPENVAS_SMB_VERSION="main" \
-    OSPD_OPENVAS_VERSION="main" \
-    python_gvm_version="22.9.0" \
-    PG_GVM_VERSION="v22.4.0" \
-    NOTUS_VERSION="main" \
+    GSAD_VERSION="v22.4.1" \
+    gvm_tools_version="v23.4.0" \
+    OPENVAS_SMB_VERSION="v22.5.0" \
+    OSPD_OPENVAS_VERSION="v22.5.0" \
+    python_gvm_version="23.4.2" \
+    PG_GVM_VERSION="main" \
+    NOTUS_VERSION="v22.5.0" \
+    SYNC_VERSION="main" \
     INSTALL_PREFIX="/usr/local" \
     SOURCE_DIR="/source" \
     BUILD_DIR="/build" \
@@ -50,15 +51,15 @@ RUN cd $SOURCE_DIR && \
     mkdir -p $BUILD_DIR/gvmd && cd $BUILD_DIR/gvmd && \
     cmake $SOURCE_DIR/gvmd \
         -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DLOCALSTATEDIR=/var \
-        -DSYSCONFDIR=/etc \
-        -DGVM_DATA_DIR=/var \
-        -DGVMD_RUN_DIR=/run/gvmd \
-        -DOPENVAS_DEFAULT_SOCKET=/run/ospd/ospd-openvas.sock \
-        -DGVM_FEED_LOCK_PATH=/var/lib/gvm/feed-update.lock \
-        -DDEFAULT_CONFIG_DIR=/etc/default \
-        -DLOGROTATE_DIR=/etc/logrotate.d && \
+  	-DCMAKE_BUILD_TYPE=Release \
+  	-DLOCALSTATEDIR=/var \
+  	-DSYSCONFDIR=/etc \
+  	-DGVM_DATA_DIR=/var \
+  	-DGVMD_RUN_DIR=/run/gvmd \
+  	-DOPENVAS_DEFAULT_SOCKET=/run/ospd/ospd-openvas.sock \
+  	-DGVM_FEED_LOCK_PATH=/var/lib/gvm/feed-update.lock \
+  	-DSYSTEMD_SERVICE_DIR=/lib/systemd/system \
+  	-DLOGROTATE_DIR=/etc/logrotate.d && \
     make -j$(nproc) && \
     make install
     
@@ -127,7 +128,7 @@ RUN cd $SOURCE_DIR && \
     mkdir -p $BUILD_DIR/openvas-scanner && cd $BUILD_DIR/openvas-scanner && \
     cmake $SOURCE_DIR/openvas-scanner \
         -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
-        # -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_BUILD_TYPE=Release \
         -DSYSCONFDIR=/etc \
         -DLOCALSTATEDIR=/var \
         -DOPENVAS_FEED_LOCK_PATH=/var/lib/openvas/feed-update.lock \
@@ -142,7 +143,7 @@ RUN cd $SOURCE_DIR && \
 RUN cd $SOURCE_DIR && \
     git clone --branch $OSPD_OPENVAS_VERSION https://github.com/greenbone/ospd-openvas.git && \
     cd $SOURCE_DIR/ospd-openvas && \
-    python3 -m pip install . --no-warn-script-location
+    python3 -m pip install --prefix /usr . --no-warn-script-location
     
     #
     # Install Notus Scanner
@@ -151,7 +152,16 @@ RUN cd $SOURCE_DIR && \
 RUN cd $SOURCE_DIR && \
     git clone --branch $NOTUS_VERSION https://github.com/greenbone/notus-scanner.git && \
     cd $SOURCE_DIR/notus-scanner && \
-    python3 -m pip install . --no-warn-script-location 
+    python3 -m pip install --prefix /usr . --no-warn-script-location 
+    
+    #
+    # Install Greenbone Feed Sync
+    #
+    
+RUN cd $SOURCE_DIR && \
+    git clone --branch $SYNC_VERSION https://github.com/greenbone/greenbone-feed-sync.git && \
+    cd $SOURCE_DIR/greenbone-feed-sync && \
+    python3 -m pip install . --no-warn-script-location
     
     #
     # Install Greenbone Vulnerability Management Python Library
@@ -167,10 +177,6 @@ RUN python3 -m pip install gvm-tools && \
     echo "/usr/local/lib" > /etc/ld.so.conf.d/openvas.conf && ldconfig
 
 COPY report_formats/* /report_formats/
-
-COPY greenbone-feed-sync-patch.txt /greenbone-feed-sync-patch.txt
-
-RUN patch /usr/local/sbin/greenbone-feed-sync /greenbone-feed-sync-patch.txt
 
 COPY sshd_config /sshd_config
 

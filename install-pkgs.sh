@@ -21,6 +21,7 @@ fakeroot \
 git \
 gcc-mingw-w64 \
 gcc \
+g++ \
 gnupg \
 gnutls-bin \
 gpgsm \
@@ -61,6 +62,7 @@ postfix \
 python3 \
 python3-cffi \
 python3-defusedxml \
+python3-gnupg \
 python3-impacket \
 python3-lxml \
 python3-packaging \
@@ -71,6 +73,8 @@ python3-redis \
 python3-setuptools \
 python3-wrapt \
 python3-paho-mqtt \
+python3-venv \
+python3-dev \
 redis-server \
 rpm \
 rsync \
@@ -79,6 +83,7 @@ snmp \
 socat \
 sshpass \
 sudo \
+subversion \
 texlive-fonts-recommended \
 texlive-latex-extra \
 uuid-dev \
