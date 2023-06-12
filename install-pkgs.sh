@@ -56,8 +56,8 @@ openssh-client \
 openssh-server \
 perl-base \
 pkg-config \
-postgresql-server-dev-13 \
-postgresql-13 \
+postgresql-server-dev-14 \
+postgresql-14 \
 postfix \
 python3 \
 python3-cffi \
@@ -92,7 +92,9 @@ wget \
 xml-twig-tools \
 xmlstarlet \
 xsltproc \
-zip"
+zip \
+zlib1g-dev \
+zlib1g"
 
 echo $INSTALL_PKGS
 
