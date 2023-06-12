@@ -7,15 +7,15 @@ COPY install-pkgs.sh /install-pkgs.sh
 
 RUN bash /install-pkgs.sh
 
-ENV GVM_LIBS_VERSION="v22.5.2" \
-    OPENVAS_SCANNER_VERSION="v22.6.1" \
+ENV GVM_LIBS_VERSION="v22.6.1" \
+    OPENVAS_SCANNER_VERSION="v22.7.2" \
     GVMD_VERSION="main" \
     GSA_VERSION="main" \
     GSAD_VERSION="v22.4.1" \
     gvm_tools_version="v23.4.0" \
-    OPENVAS_SMB_VERSION="v22.5.0" \
-    OSPD_OPENVAS_VERSION="v22.5.0" \
-    python_gvm_version="23.4.2" \
+    OPENVAS_SMB_VERSION="v22.5.2" \
+    OSPD_OPENVAS_VERSION="v22.5.1" \
+    python_gvm_version="23.5.1" \
     PG_GVM_VERSION="main" \
     NOTUS_VERSION="v22.5.0" \
     SYNC_VERSION="main" \
@@ -71,7 +71,8 @@ RUN cd $SOURCE_DIR && \
     git clone --branch $PG_GVM_VERSION https://github.com/greenbone/pg-gvm.git && \
     mkdir -p $BUILD_DIR/pg-gvm && cd $BUILD_DIR/pg-gvm && \
     cmake $SOURCE_DIR/pg-gvm \
-        -DCMAKE_BUILD_TYPE=Release && \
+        -DCMAKE_BUILD_TYPE=Release \
+	-DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql && \
     make -j$(nproc) && \
     make install
 

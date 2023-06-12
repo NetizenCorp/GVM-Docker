@@ -3,7 +3,7 @@
 Visit out Website: https://www.netizen.net
 
 # Greenbone Vulnerability Manager/Scanner
-## Latest Version: 22.4.1
+## Latest Version: 22.4.1rev1
 ![Docker Pulls](https://img.shields.io/docker/pulls/netizensoc/gvm-scanner?style=plastic)
 ![GitHub](https://img.shields.io/github/license/thecomet28/gvm-docker)
 
@@ -43,7 +43,7 @@ nano docker-compose.yml
 ```
 Edit the yml file with your preferences. NOTE: Netizen is not responsible for any breach if user fails to change the default username and passwords. Make sure to store your passwords in a secure password manager.
 ```bash
-version: "3.1"
+version: "3.8"
 services:
     gvm:
         image: netizensoc/gvm-scanner:[latest|dev|stable] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image. Stable is the previous stable release.
@@ -97,7 +97,7 @@ nano docker-compose.yml
 ```
 Edit the yml file with your preferences. NOTE: Netizen is not responsible for any breach if user fails to change the default username and passwords. Make sure to store your passwords in a secure password manager.
 ```bash
-version: "3.1"
+version: "3.8"
 services:
     gvm:
         image: gvm:latest
@@ -132,7 +132,7 @@ sudo docker logs -f [container name] # Example: docker logs -f gvm-docker_gvm_1
 After everything is complete, go the https://[Host IP Address]/ to access the scanner. Use the credentials you provided in the yml file.
 
 ## PostgreSQL Upgrade
-If you are upgrading from a previous major version of PostgreSQL 12 or Under, you will need to upgrade your database before installation. The instructions below will guide you through the upgrade by doing a back up of your database, recreating the docker image, and restoring the backup. The new version of GVM uses Postgres version 13. Please follow the steps below based on your operating system version.
+If you are upgrading from a previous major version of PostgreSQL 12 or Under, you will need to upgrade your database before installation. The instructions below will guide you through the upgrade by doing a back up of your database, recreating the docker image, and restoring the backup. The new version of GVM uses Postgres version 14. Please follow the steps below based on your operating system version.
 
 ### AMD64 Based Upgrade
 - Log into the terminal Linux Box hosting the GVM scanner and then type the following commands

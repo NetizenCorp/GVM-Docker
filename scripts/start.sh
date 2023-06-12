@@ -52,13 +52,13 @@ if  [ ! -d /data/database ]; then
 	echo "Creating Database folder..."
 	mkdir /data/database
 	chown postgres:postgres -R /data/database
-	su -c "/usr/lib/postgresql/13/bin/initdb /data/database" postgres
+	su -c "/usr/lib/postgresql/14/bin/initdb /data/database" postgres
 fi
 
 chown postgres:postgres -R /data/database
 
 echo "Starting PostgreSQL..."
-su -c "/usr/lib/postgresql/13/bin/pg_ctl -D /data/database start" postgres
+su -c "/usr/lib/postgresql/14/bin/pg_ctl -D /data/database start" postgres
 
 if  [ ! -d /data/ssh ]; then
 	echo "Creating SSH folder..."
@@ -86,6 +86,7 @@ if [ ! -f "/firstrun" ]; then
 	usermod -aG tty gvm
 	usermod -aG sudo gvm
   	usermod -aG redis gvm
+	echo "%gvm ALL = NOPASSWD: /usr/local/sbin/openvas" >> /etc/sudoers
   
   	echo "Importing Greenbone Signing Keys..."
   	curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc
@@ -158,17 +159,9 @@ if [ ! -f "/data/firstrun" ]; then
 	
 	chown postgres:postgres -R /data/database
 	
-  	su -c "/usr/lib/postgresql/13/bin/pg_ctl -D /data/database restart" postgres
+  	su -c "/usr/lib/postgresql/14/bin/pg_ctl -D /data/database restart" postgres
  
 	touch /data/firstrun
-fi
-
-if [ ! -f "/data/upgrade_to_21.4.0" ]; then
-	su -c "psql --dbname=gvmd --command='CREATE TABLE IF NOT EXISTS vt_severities (id SERIAL PRIMARY KEY,vt_oid text NOT NULL,type text NOT NULL, origin text,date integer,score double precision,value text);'" postgres
-	su -c "psql --dbname=gvmd --command='ALTER TABLE vt_severities ALTER COLUMN score SET DATA TYPE double precision;'" postgres
-	su -c "psql --dbname=gvmd --command='UPDATE vt_severities SET score = round((score / 10.0)::numeric, 1);'" postgres
-	su -c "psql --dbname=gvmd --command='ALTER TABLE vt_severities OWNER TO gvm;'" postgres
-	touch /data/upgrade_to_21.4.0
 fi
 
 su -c "gvmd --migrate" gvm
@@ -271,14 +264,6 @@ if [ $HTTPS == "true" ]; then
 	su -c "gsad --verbose --gnutls-priorities=SECURE128:-AES-128-CBC:-CAMELLIA-128-CBC:-VERS-SSL3.0:-VERS-TLS1.0 --timeout=$TIMEOUT --no-redirect --mlisten=127.0.0.1 --mport=9390 --port=9392 --ssl-private-key=/var/lib/gvm/private/CA/serverkey.pem --ssl-certificate=/var/lib/gvm/CA/servercert.pem" gvm
 else
 	su -c "gsad --verbose --http-only --timeout=$TIMEOUT --no-redirect --mlisten=127.0.0.1 --mport=9390 --port=9392" gvm
-fi
-
-if [ ! -f "/var/lib/gvm/.fixed_db" ]; then
-  echo "Fixing Database Tables..."
-  su -c "psql --dbname=gvmd --command='ALTER TABLE IF EXISTS results ADD COLUMN hash_value VARCHAR;'" postgres
-  su -c "psql --dbname=gvmd --command='ALTER TABLE IF EXISTS report_host_details ADD COLUMN hash_value VARCHAR;'" postgres
-  
-  touch /var/lib/gvm/.fixed_db
 fi
 
 if [ $SSHD == "true" ]; then
