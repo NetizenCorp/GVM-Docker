@@ -1,15 +1,15 @@
 ![Netizen Logo](https://www.netizen.net/assets/img/netizen_banner_cybersecure_small.png)
 
-Visit out Website: https://www.netizen.net
+Visit our Website: https://www.netizen.net
 
 # Greenbone Vulnerability Manager/Scanner
-## Latest Version: 22.4.1rev1
+## Latest Version: 22.6.1
 ![Docker Pulls](https://img.shields.io/docker/pulls/netizensoc/gvm-scanner?style=plastic)
 ![GitHub](https://img.shields.io/github/license/thecomet28/gvm-docker)
 
-The docker container is based on the latest version of Greenbone Vulnerability Management 11 and OpenVAS. Netizen continues to make improvements to the software for stability and functionality of the suite. This container supports AMD 64-bit and ARM 64-bit Linux based operating systems. If upgrading from a previous version of GVM 21.04.x and older, you will need to follow the PostgreSQL upgrade instructions.
+The docker container is based on the latest version of Greenbone Vulnerability Management and OpenVAS. Netizen continues to make improvements to the software for the stability and functionality of the suite. This container supports AMD 64-bit and ARM 64-bit Linux-based operating systems. If upgrading from a previous version of GVM 21.04.x and older, or PostgreSQL version 13 or older, you will need to follow the PostgreSQL upgrade instructions. It is recommended to take a backup of your containers or VM before continuing in case of data corruption during the upgrade.
 
-A remote scanner can be found at visiting our [Openvas-Docker Github Repo](https://github.com/NetizenCorp/OpenVAS-Docker).
+A remote scanner can be found by visiting our [Openvas-Docker Github Repo](https://github.com/NetizenCorp/OpenVAS-Docker).
 
 ## Table of Contents
 - Installation Instructions
@@ -26,12 +26,12 @@ A remote scanner can be found at visiting our [Openvas-Docker Github Repo](https
 ## Installation Instructions
 
 ### AMD 64-bit Operation System Installation
-First, install required packages, docker, and docker-compose on your linux system. After installation, apply permissions to a user(s) that will use docker. ${USER} is the username of the user(s).
+First, install the required packages, docker, and docker-compose on your Linux system. After installation, apply permissions to a user(s) that will use docker. ${USER} is the username of the user(s).
 ```bash
 sudo apt update
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common docker.io docker-compose
 ```
-Next, create a directory and download the docker-compose.yml file from github.
+Next, create a directory and download the docker-compose.yml file from GitHub.
 ```bash
 mkdir -p /home/$USER/gvm-docker
 cd /home/$USER/gvm-docker
@@ -41,7 +41,7 @@ Next, you will modify the docker-compose.yml file using your preferred editor (n
 ```bash
 nano docker-compose.yml
 ```
-Edit the yml file with your preferences. NOTE: Netizen is not responsible for any breach if user fails to change the default username and passwords. Make sure to store your passwords in a secure password manager.
+Edit the yml file with your preferences. NOTE: Netizen is not responsible for any breach if the user fails to change the default username and passwords. Make sure to store your passwords in a secure password manager.
 ```bash
 version: "3.8"
 services:
@@ -50,7 +50,7 @@ services:
         volumes:
           - gvm-data:/data              # DO NOT MODIFY
         environment:
-          - USERNAME="admin"            # You can leave the username as admin or change to what ever you like
+          - USERNAME="admin"            # You can leave the username as admin or change to whatever you like
           - PASSWORD="admin"            # Please use 15+ Characters consisting of numbers, lower & uppercase letters, and a special character.
           - HTTPS=true                  # DO NOT MODIFY
           - TZ="ETC"                    # Change to your corresponding timezone
@@ -65,7 +65,7 @@ services:
 volumes:
     gvm-data:
 ```
-Next, its time to stand up the docker using docker-compose.
+Next, it's time to stand up the docker using docker-compose.
 ```bash
 sudo docker-compose up -d # The -d option is for a detached docker image
 ```
@@ -78,7 +78,7 @@ sudo docker logs -f [container name] # Example: docker logs -f gvm-docker_gvm_1
 After everything is complete, go the https://[Host IP Address]/ to access the scanner. Use the credentials you provided in the yml file.
 
 ### ARM 64-bit Operation System Installation
-First, install docker and docker-compose on your linux system. After installation, apply permissions to a user(s) that will use docker. ${USER} is the username of the user(s).
+First, install docker and docker-compose on your Linux system. After installation, apply permissions to a user(s) that will use docker. ${USER} is the username of the user(s).
 ```bash
 sudo apt update
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common docker.io docker-compose
@@ -95,7 +95,7 @@ After the build is complete, you will modify the docker-compose.yml file using y
 ```bash
 nano docker-compose.yml
 ```
-Edit the yml file with your preferences. NOTE: Netizen is not responsible for any breach if user fails to change the default username and passwords. Make sure to store your passwords in a secure password manager.
+Edit the yml file with your preferences. NOTE: Netizen is not responsible for any breach if the user fails to change the default username and passwords. Make sure to store your passwords in a secure password manager.
 ```bash
 version: "3.8"
 services:
@@ -119,7 +119,7 @@ services:
 volumes:
     gvm-data:
 ```
-Next, its time to stand up the docker using docker-compose.
+Next, it's time to stand up the docker using docker-compose.
 ```bash
 sudo docker-compose up -d # The -d option is for a detached docker image
 ```
@@ -132,7 +132,7 @@ sudo docker logs -f [container name] # Example: docker logs -f gvm-docker_gvm_1
 After everything is complete, go the https://[Host IP Address]/ to access the scanner. Use the credentials you provided in the yml file.
 
 ## PostgreSQL Upgrade
-If you are upgrading from a previous major version of PostgreSQL 12 or Under, you will need to upgrade your database before installation. The instructions below will guide you through the upgrade by doing a back up of your database, recreating the docker image, and restoring the backup. The new version of GVM uses Postgres version 14. Please follow the steps below based on your operating system version.
+If you are upgrading from a previous major version of PostgreSQL 13 or Under, you will need to upgrade your database before installation. The instructions below will guide you through the upgrade by doing a backup of your database, recreating the docker image, and restoring the backup. The new version of GVM uses Postgres version 14. Please follow the steps below based on your operating system version.
 
 ### AMD64 Based Upgrade
 - Log into the terminal Linux Box hosting the GVM scanner and then type the following commands
@@ -192,7 +192,7 @@ After executing that command, wait for the restore function to place all the inf
 
 ## Architecture
 
-The key points to take away from the diagram below, is the way our setup establishes connection with the remote sensor, and the available ports on the GMV-Docker container. You can still use any add on tools you've used in the past with OpenVAS on 9390. One of the latest/best upgrades allows you connect directly to postgres using your favorite database tool. 
+The key points to take away from the diagram below are the way our setup establishes a connection with the remote scanner and the available ports on the GMV-Docker container. You can still use any add-on tools you've used in the past with OpenVAS on 9390. One of the latest/best upgrades allows you to connect directly to Postgres using your favorite database tool. 
 
 ![GVM Container Architecture](https://greenbone.github.io/docs/latest/_images/greenbone-community-22.4-architecture.png)
 
@@ -208,9 +208,9 @@ The key points to take away from the diagram below, is the way our setup establi
 
 | Hosts              | CPU Cores     | Memory    | Disk Space |
 | :----------------- | :------------ | :-------- | :--------- |
-| 512 active IPs     | 4@2GHz cores  | 8 GB RAM  | 50 GB      |
-| 2,500 active IPs   | 6@2GHz cores  | 12 GB RAM | 100 GB     |
-| 10,000 active IPs  | 8@3GHz cores  | 16 GB RAM | 250 GB     |
+| 512 active IPs     | 4@2GHz cores  | 8 GB RAM  | 100 GB      |
+| 2,500 active IPs   | 6@2GHz cores  | 12 GB RAM | 200 GB     |
+| 10,000 active IPs  | 8@3GHz cores  | 16 GB RAM | 500 GB     |
 | 25,000 active IPs  | 16@3GHz cores | 32 GB RAM | 1 TB       |
 | 100,000 active IPs | 32@3GHz cores | 64 GB RAM | 2 TB       |
 
