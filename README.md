@@ -46,7 +46,7 @@ Edit the yml file with your preferences. NOTE: Netizen is not responsible for an
 version: "3.8"
 services:
     gvm:
-        image: netizensoc/gvm-scanner:[latest|dev|stable] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image. Stable is the previous stable release.
+        image: netizensoc/gvm-scanner:[latest|dev] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image.
         volumes:
           - gvm-data:/data              # DO NOT MODIFY
         environment:
@@ -202,7 +202,6 @@ The key points to take away from the diagram below are the way our setup establi
 | --------- | ------------------------ |
 | latest    | Latest stable version    |
 | dev       | Latest development build |
-| stable    | Old stable version       |
 
 ## Estimated Hardware Requirements
 
