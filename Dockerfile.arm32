@@ -1,4 +1,4 @@
-FROM --platform=linux/arm ubuntu:22.04
+FROM arm32v7/ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
