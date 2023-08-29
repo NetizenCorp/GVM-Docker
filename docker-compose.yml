@@ -1,7 +1,7 @@
 version: "3.8"
 services:
     gvm:
-        image: netizensoc/gvm-scanner:[latest|dev|stable] # Latest is the stable image. Dev is the development un-stable image. Stable is previous release version.
+        image: netizensoc/gvm-scanner:[latest|dev] # Latest is the stable image. Dev is the development un-stable image.
         volumes:
           - gvm-data:/data              # DO NOT MODIFY
         environment:

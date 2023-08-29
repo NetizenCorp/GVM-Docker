@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+# Set Variables
+
 USERNAME=${USERNAME:-admin}
 PASSWORD=${PASSWORD:-admin}
 TIMEOUT=${TIMEOUT:-15}
@@ -13,21 +15,35 @@ TZ=${TZ:-UTC}
 SSHD=${SSHD:-false}
 DB_PASSWORD=${DB_PASSWORD:-none}
 
+# Copy Cron Scripts
+
 crontab cronsettings.txt
 cron start
+
+# Create Redis Folder
 
 if [ ! -d "/run/redis" ]; then
 	mkdir /run/redis
 fi
-if  [ -S /run/redis/redis.sock ]; then
+
+# If redis socket exists then remove socket before start
+
+if [ -S /run/redis/redis.sock ]; then
         rm /run/redis/redis.sock
 fi
+
+# Starting Redis Server
+
 redis-server --unixsocket /run/redis/redis.sock --unixsocketperm 700 --timeout 0 --databases 65536 --maxclients 4096 --daemonize yes --port 6379 --bind 0.0.0.0
+
+# Waiting for socket to be created
 
 echo "Wait for redis socket to be created..."
 while  [ ! -S /run/redis/redis.sock ]; do
         sleep 1
 done
+
+# Testing redis socket connection
 
 echo "Testing redis status..."
 X="$(redis-cli -s /run/redis/redis.sock ping)"
@@ -38,29 +54,46 @@ while  [ "${X}" != "PONG" ]; do
 done
 echo "Redis ready."
 
+# Starting Mosquitto
+
 echo "Starting Mosquitto..."
 /usr/sbin/mosquitto &
-echo "mqtt_server_uri = localhost:1883" | tee -a /etc/openvas/openvas.conf
 
+# Copy server uri on first run
 
-if  [ ! -d /data ]; then
+if [ ! -f /mqttfirstrun ]; then
+	echo "mqtt_server_uri = localhost:1883" | tee -a /etc/openvas/openvas.conf
+	touch /mqttfirstrun
+fi
+
+# Creating data folder
+
+if [ ! -d /data ]; then
 	echo "Creating Data folder..."
         mkdir /data
 fi
 
-if  [ ! -d /data/database ]; then
+# Creating database folder
+
+if [ ! -d /data/database ]; then
 	echo "Creating Database folder..."
 	mkdir /data/database
 	chown postgres:postgres -R /data/database
 	su -c "/usr/lib/postgresql/14/bin/initdb /data/database" postgres
 fi
 
+# Setting folder permissions
+
 chown postgres:postgres -R /data/database
+
+# Starting PostgreSQL
 
 echo "Starting PostgreSQL..."
 su -c "/usr/lib/postgresql/14/bin/pg_ctl -D /data/database start" postgres
 
-if  [ ! -d /data/ssh ]; then
+# Creating SSH Folder and configuring
+
+if [ ! -d /data/ssh ]; then
 	echo "Creating SSH folder..."
 	mkdir /data/ssh
 	
@@ -71,10 +104,14 @@ if  [ ! -d /data/ssh ]; then
 	mv /etc/ssh/ssh_host_* /data/ssh/
 fi
 
-if  [ ! -h /etc/ssh ]; then
+# If the symbolic link doesn't exist the create the link
+
+if [ ! -h /etc/ssh ]; then
 	rm -rf /etc/ssh
 	ln -s /data/ssh /etc/ssh
 fi
+
+# Starting first run configurations (user permissions, timezones, signing keys, creating folders)
 
 if [ ! -f "/firstrun" ]; then
 	echo "Running first start configuration..."
@@ -141,6 +178,8 @@ if [ ! -f "/firstrun" ]; then
 	touch /firstrun 
 fi
 
+# Creating GVM database
+
 if [ ! -f "/data/firstrun" ]; then
 	echo "Creating Greenbone Vulnerability Manager database"
 	su -c "createuser -DRS gvm" postgres
@@ -164,16 +203,24 @@ if [ ! -f "/data/firstrun" ]; then
 	touch /data/firstrun
 fi
 
+# Migrating database from older version of GVM
+
 su -c "gvmd --migrate" gvm
+
+# Setting database password for gvm
 
 if [ $DB_PASSWORD != "none" ]; then
 	su -c "psql --dbname=gvmd --command=\"alter user gvm password '$DB_PASSWORD';\"" postgres
 fi
 
+# Creating GVMD Folder
+
 echo "Creating gvmd folder..."
 su -c "mkdir -p /var/lib/gvm/gvmd/report_formats" gvm
 chown gvm:gvm -R /var/lib/gvm
 find /var/lib/gvm/gvmd/report_formats -type f -name "generate" -exec chmod +x {} \;
+
+# Creating scanner certificates
 
 if [ ! -d /var/lib/gvm/CA ] || [ ! -d /var/lib/gvm/private ] || [ ! -d /var/lib/gvm/private/CA ] ||
 	[ ! -f /var/lib/gvm/CA/cacert.pem ] || [ ! -f /var/lib/gvm/CA/clientcert.pem ] ||
@@ -201,38 +248,50 @@ true
 ###########################
 
 if [ -f /run/ospd/ospd.pid ]; then
-  rm /run/ospd/ospd.pid
+	rm /run/ospd/ospd.pid
 fi
 
 if [ -S /tmp/ospd.sock ]; then
-  rm /tmp/ospd.sock
+	rm /tmp/ospd.sock
 fi
 
 if [ -S /run/ospd/ospd.sock ]; then
-  rm /run/ospd/ospd-openvas.sock
+	rm /run/ospd/ospd-openvas.sock
 fi
 
 if [ ! -d /run/ospd ]; then
-  mkdir /run/ospd
+	mkdir /run/ospd
 fi
+
+# Starting PostFix email server
 
 echo "Starting Postfix for report delivery by email"
 sed -i "s/^relayhost.*$/relayhost = ${RELAYHOST}:${SMTPPORT}/" /etc/postfix/main.cf
 service postfix start
 
+# Starting OSPD-Openvas
+
 echo "Starting Open Scanner Protocol daemon for OpenVAS..."
 ospd-openvas --log-file /var/log/gvm/ospd-openvas.log --unix-socket /run/ospd/ospd-openvas.sock --socket-mode 0o666 --log-level INFO
 
-while  [ ! -S /run/ospd/ospd-openvas.sock ]; do
+# Waiting for OSPD Socket Creations
+
+while [ ! -S /run/ospd/ospd-openvas.sock ]; do
 	sleep 1
 done
+
+# Starting Notus Scanner
 
 echo "Starting Notus Scanner..."
 /usr/local/bin/notus-scanner --products-directory /var/lib/notus/products --log-file /var/log/gvm/notus-scanner.log
 
+# Creating OSPD link
+
 echo "Creating OSPd socket link from old location..."
 rm -rf /tmp/ospd.sock
 ln -s /run/ospd/ospd-openvas.sock /tmp/ospd.sock
+
+# Starting GVMD
 
 echo "Starting Greenbone Vulnerability Manager..."
 su -c "gvmd --listen=0.0.0.0 --port=9390 --max-ips-per-target=65536 --gnutls-priorities=SECURE128:-AES-128-CBC:-CAMELLIA-128-CBC:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1" gvm
@@ -242,7 +301,9 @@ until su -c "gvmd --get-users" gvm; do
 	sleep 1
 done
 
-if [ ! -f "/var/lib/gvm/.created_gvm_user" ]; then
+# Creating GVM Admin User
+
+if [ ! -f "/data/.created_gvm_user" ]; then
 	echo "Creating Greenbone Vulnerability Manager admin user"
 	su -c "gvmd --role=\"Super Admin\" --create-user=\"$USERNAME\" --password=\"$PASSWORD\"" gvm
 	
@@ -254,10 +315,14 @@ if [ ! -f "/var/lib/gvm/.created_gvm_user" ]; then
 	
 	su -c "gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value ${ADDR[1]}" gvm
 	
-	touch /var/lib/gvm/.created_gvm_user
+	touch /data/.created_gvm_user
 fi
 
+# Sets Password after first creation of the user
+
 su -c "gvmd --user=\"$USERNAME\" --new-password=\"$PASSWORD\"" gvm
+
+# Starting GSA
 
 echo "Starting Greenbone Security Assistant..."
 if [ $HTTPS == "true" ]; then
@@ -265,6 +330,8 @@ if [ $HTTPS == "true" ]; then
 else
 	su -c "gsad --verbose --http-only --timeout=$TIMEOUT --no-redirect --mlisten=127.0.0.1 --mport=9390 --port=9392" gvm
 fi
+
+# Starting SSHD server for remote scanner connection
 
 if [ $SSHD == "true" ]; then
 	echo "Starting OpenSSH Server..."
