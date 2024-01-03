@@ -179,15 +179,11 @@ RUN python3 -m pip install gvm-tools && \
     echo "/usr/local/lib" > /etc/ld.so.conf.d/openvas.conf && ldconfig
 
 COPY report_formats/* /report_formats/
-
 COPY sshd_config /sshd_config
-
 COPY scripts/* /
-
 RUN chmod +x /*.sh
-
+COPY branding/* /branding/
+RUN bash /branding/brand.sh
 ENV NMAP_PRIVILEGED=1
-
 RUN setcap cap_net_raw,cap_net_admin,cap_net_bind_service+eip /usr/bin/nmap
-
 CMD '/start.sh'
