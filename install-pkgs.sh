@@ -101,7 +101,7 @@ echo $INSTALL_PKGS
 apt-get install -yq --no-install-recommends $INSTALL_PKGS
 
 # Install Node.js
-curl -sL https://deb.nodesource.com/setup_14.x | bash -
+curl -sL https://deb.nodesource.com/setup_18.x | bash -
 apt-get install nodejs -yq --no-install-recommends
 
 
