@@ -3,7 +3,7 @@
 Visit our Website: https://www.netizen.net
 
 # Greenbone Vulnerability Manager/Scanner
-## Latest Version: 22.6.1
+## Latest Version: 22.9.1
 ![Docker Pulls](https://img.shields.io/docker/pulls/netizensoc/gvm-scanner?style=plastic)
 ![GitHub](https://img.shields.io/github/license/thecomet28/gvm-docker)
 
