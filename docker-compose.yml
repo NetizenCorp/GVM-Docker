@@ -1,4 +1,3 @@
-version: "3.8"
 services:
     gvm:
         image: netizensoc/gvm-scanner:[latest|dev] # Latest is the stable image. Dev is the development un-stable image.
