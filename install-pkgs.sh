@@ -48,6 +48,7 @@ libssh-gcrypt-dev \
 libbsd-dev \
 libunistring-dev \
 libxml2-dev \
+libcurl4-gnutls-dev \
 mosquitto \
 nano \
 nmap \
