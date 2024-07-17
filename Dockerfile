@@ -50,16 +50,16 @@ RUN cd $SOURCE_DIR && \
     git clone --branch $GVMD_VERSION https://github.com/greenbone/gvmd.git && \
     mkdir -p $BUILD_DIR/gvmd && cd $BUILD_DIR/gvmd && \
     cmake $SOURCE_DIR/gvmd \
-        -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
-		-DCMAKE_BUILD_TYPE=Release \
-		-DLOCALSTATEDIR=/var \
-		-DSYSCONFDIR=/etc \
-		-DGVM_DATA_DIR=/var \
-		-DGVMD_RUN_DIR=/run/gvmd \
-		-DOPENVAS_DEFAULT_SOCKET=/run/ospd/ospd-openvas.sock \
-		-DGVM_FEED_LOCK_PATH=/var/lib/gvm/feed-update.lock \
-		-DSYSTEMD_SERVICE_DIR=/lib/systemd/system \
-		-DLOGROTATE_DIR=/etc/logrotate.d && \
+	-DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DLOCALSTATEDIR=/var \
+	-DSYSCONFDIR=/etc \
+	-DGVM_DATA_DIR=/var \
+	-DGVMD_RUN_DIR=/run/gvmd \
+	-DOPENVAS_DEFAULT_SOCKET=/run/ospd/ospd-openvas.sock \
+	-DGVM_FEED_LOCK_PATH=/var/lib/gvm/feed-update.lock \
+	-DSYSTEMD_SERVICE_DIR=/lib/systemd/system \
+	-DLOGROTATE_DIR=/etc/logrotate.d && \
     make -j$(nproc) && \
     make install
     
@@ -72,7 +72,7 @@ RUN cd $SOURCE_DIR && \
     mkdir -p $BUILD_DIR/pg-gvm && cd $BUILD_DIR/pg-gvm && \
     cmake $SOURCE_DIR/pg-gvm \
         -DCMAKE_BUILD_TYPE=Release \
-		-DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql && \
+	-DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql && \
     make -j$(nproc) && \
     make install
 
@@ -84,7 +84,7 @@ RUN cd $SOURCE_DIR && \
     git clone --branch $GSA_VERSION https://github.com/greenbone/gsa.git && \
     cd $SOURCE_DIR/gsa && \
     rm -rf build && \
-	npm install terser && \
+    npm install terser && \
     yarnpkg && \
     yarnpkg build && \
     mkdir -p $INSTALL_PREFIX/share/gvm/gsad/web/ && \
@@ -129,9 +129,9 @@ RUN cd $SOURCE_DIR && \
     git clone --branch $OPENVAS_SCANNER_VERSION https://github.com/greenbone/openvas-scanner.git && \
     mkdir -p $BUILD_DIR/openvas-scanner && cd $BUILD_DIR/openvas-scanner && \
     cmake $SOURCE_DIR/openvas-scanner \
-        -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
+    	-DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
         -DCMAKE_BUILD_TYPE=Release \
-		-DINSTALL_OLD_SYNC_SCRIPT=OFF \
+	-DINSTALL_OLD_SYNC_SCRIPT=OFF \
         -DSYSCONFDIR=/etc \
         -DLOCALSTATEDIR=/var \
         -DOPENVAS_FEED_LOCK_PATH=/var/lib/openvas/feed-update.lock \
