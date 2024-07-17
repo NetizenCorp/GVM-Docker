@@ -58,7 +58,7 @@ services:
           - "2222:22"   # SSH for remote sensors. You can comment the line out with the # if you don't plan on using remote scanners.
           # - "9390:9390" # For GVM API Access. Leave commented if you do not plan on using the API for external web application access.
         restart: unless-stopped # Remove if your using for penetration testing or one-time scans. Only use if using for production/continuous scanning
-		logging:
+	logging:
           driver: "json-file"
           options:
             max-size: "1k"
