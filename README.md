@@ -23,24 +23,23 @@ A remote scanner can be found by visiting our [Openvas-Docker Github Repo](https
 ## Installation Instructions
 
 ### Docker System Installation (Linux AMD/ARM 64-bit Only)
-First, install the required packages, docker, and docker-compose on your Linux system.
+1. nstall the required packages, docker, and docker-compose on your Linux system.
 ```bash
 sudo apt update
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common docker.io docker-compose
 ```
-Next, create a directory and download the docker-compose.yml file from GitHub. ${USER} is the username of the user(s).
+2. Create a directory and download the docker-compose.yml file from GitHub. ${USER} is the username of the user(s).
 ```bash
 mkdir -p /home/$USER/gvm-docker
 cd /home/$USER/gvm-docker
 wget https://raw.githubusercontent.com/NetizenCorp/GVM-Docker/main/docker-compose.yml
 ```
-Next, you will modify the docker-compose.yml file using your preferred editor (Nano or Vim).
+3. Modify the docker-compose.yml file using your preferred editor (Nano or Vim).
 ```bash
 nano docker-compose.yml
 ```
-Edit the yml file with your preferences. NOTE: Netizen is not responsible for any breach if the user fails to change the default username and passwords. Make sure to store your passwords in a secure password manager.
+4. Edit the yml file with your preferences. NOTE: Netizen is not responsible for any breach if the user fails to change the default username and passwords. Make sure to store your passwords in a secure password manager.
 ```bash
-version: "3.8"
 services:
     gvm:
         image: netizensoc/gvm-scanner:[latest|dev] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image (WARNING: May contain bugs and issues).
@@ -59,10 +58,15 @@ services:
           - "2222:22"   # SSH for remote sensors. You can comment the line out with the # if you don't plan on using remote scanners.
           # - "9390:9390" # For GVM API Access. Leave commented if you do not plan on using the API for external web application access.
         restart: unless-stopped # Remove if your using for penetration testing or one-time scans. Only use if using for production/continuous scanning
+		logging:
+          driver: "json-file"
+          options:
+            max-size: "1k"
+            max-file: "3"
 volumes:
     gvm-data:
 ```
-Next, it's time to stand up the docker image using docker-compose.
+5. Next, it's time to stand up the docker image using docker-compose.
 ```bash
 sudo docker-compose up -d # The -d option is for a detached docker image
 ```
@@ -71,8 +75,7 @@ It will take time for the container to be ready as it compiles the NVTs, CVE, CE
 sudo docker container ls # Lists the current containers running on the system. Look under the Names column for the container name. Ex: gvm-docker_gvm_1
 sudo docker logs -f [container name] # Example: docker logs -f gvm-docker_gvm_1
 ```
-
-After completing everything, go to https://[Host IP Address]/ to access the scanner. Use the credentials you provided in the yml file.
+6. After completing everything, go to https://[Host IP Address]/ to access the scanner. Use the credentials you provided in the yml file.
 
 ### Docker System Installation (Windows WSL2 AMD 64-bit Only)
 1. Install Docker Desktop for Windows and the required packages for docker, docker-compose, and WSL 2 on your Windows system. You can download the application at https://www.docker.com/products/docker-desktop/
@@ -80,7 +83,6 @@ After completing everything, go to https://[Host IP Address]/ to access the scan
 2. Follow the usual installation instructions to install Docker Desktop. Depending on which version of Windows you are using, Docker Desktop may prompt you to turn on WSL 2 during installation. Read the information displayed on the screen and turn on the WSL 2 feature to continue.
 
 3. After installing Docker Desktop and before activating WSL2, you must create a .wslconfig file under your C:\Users\<Username>\ directory or modify the existing file with the text below. Please configure the file based on your system specs or VM requirements.
-
 ```bash
 # Settings apply across all Linux distros running on WSL 2
 [wsl2]
@@ -122,7 +124,6 @@ debugConsole=true
 [experimental]
 sparseVhd=true
 ```
-
 4. Start Docker Desktop from the Windows Start menu.
 
 5. Navigate to Settings.
@@ -141,7 +142,7 @@ sparseVhd=true
 
 Edit and save the yml file with your preferences. NOTE: Netizen is not responsible for any breach if the user fails to change the default username and passwords. Make sure to store your passwords in a secure password manager.
 ```bash
-version: "3.8"
+
 services:
     gvm:
         image: netizensoc/gvm-scanner:[latest|dev] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image (WARNING: May contain bugs and issues).
@@ -160,6 +161,11 @@ services:
           - "2222:22"   # SSH for remote sensors. You can comment the line out with the # if you don't plan on using remote scanners.
           # - "9390:9390" # For GVM API Access. Leave commented if you do not plan on using the API for external web application access.
         restart: unless-stopped # Remove if your using for penetration testing or one-time scans. Only use if using for production/continuous scanning
+		logging:
+          driver: "json-file"
+          options:
+            max-size: "1k"
+            max-file: "3"
 volumes:
     gvm-data:
 ```

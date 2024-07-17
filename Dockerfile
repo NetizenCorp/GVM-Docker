@@ -2,26 +2,10 @@ FROM ubuntu:jammy
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
-ENV INSTALL_PKGS="bison build-essential cmake cron curl dpkg fakeroot git gcc-mingw-w64 gcc g++ gnupg gnutls-bin gpgsm heimdal-dev libgcrypt20-dev libjson-glib-dev libglib2.0-dev libgnutls28-dev libgpgme-dev libhiredis-dev libical-dev libksba-dev libldap2-dev libmicrohttpd-dev libpaho-mqtt-dev libnet1-dev libpcap-dev libcap2-bin libcjson-dev libpopt-dev libpq-dev libradcli-dev libsnmp-dev libssh-gcrypt-dev libbsd-dev libunistring-dev libxml2-dev libcurl4-gnutls-dev mosquitto nano nmap nsis openssh-client openssh-server perl-base pkg-config postgresql-server-dev-14 postgresql-14 postfix python3 python3-cffi python3-defusedxml python3-gnupg python3-impacket python3-lxml python3-packaging python3-paramiko python3-pip python3-psutil python3-redis python3-setuptools python3-wrapt python3-paho-mqtt python3-venv python3-dev redis-server rpm rsync smbclient snmp socat sshpass sudo subversion texlive-fonts-recommended texlive-latex-extra uuid-dev vim wget xml-twig-tools xmlstarlet xsltproc zip zlib1g-dev zlib1g"
 
+COPY install-pkgs.sh /install-pkgs.sh
 
-RUN apt-get update --fix-missing && apt-get -y upgrade && apt-get update && apt-get install -y gnupg curl apt-utils ca-certificates wget
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt jammy-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-RUN curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-RUN apt-get install -y --no-install-recommends $INSTALL_PKGS
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
-RUN apt-get install nodejs -yq --no-install-recommends
-
-# Install Yarn
-RUN curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get update && apt-get install yarn -yq --no-install-recommends
-
-RUN rm -rf /var/lib/apt/lists/*
-
-# COPY install-pkgs.sh /install-pkgs.sh
-
-# RUN bash /install-pkgs.sh
+RUN bash /install-pkgs.sh
 
 ENV GVM_LIBS_VERSION="v22.10.0" \
     OPENVAS_SCANNER_VERSION="v23.6.0" \
