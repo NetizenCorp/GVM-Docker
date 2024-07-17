@@ -1,21 +1,37 @@
-FROM ubuntu:22.04
+FROM ubuntu:jammy
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
+ENV INSTALL_PKGS="bison build-essential cmake cron curl dpkg fakeroot git gcc-mingw-w64 gcc g++ gnupg gnutls-bin gpgsm heimdal-dev libgcrypt20-dev libjson-glib-dev libglib2.0-dev libgnutls28-dev libgpgme-dev libhiredis-dev libical-dev libksba-dev libldap2-dev libmicrohttpd-dev libpaho-mqtt-dev libnet1-dev libpcap-dev libcap2-bin libcjson-dev libpopt-dev libpq-dev libradcli-dev libsnmp-dev libssh-gcrypt-dev libbsd-dev libunistring-dev libxml2-dev libcurl4-gnutls-dev mosquitto nano nmap nsis openssh-client openssh-server perl-base pkg-config postgresql-server-dev-14 postgresql-14 postfix python3 python3-cffi python3-defusedxml python3-gnupg python3-impacket python3-lxml python3-packaging python3-paramiko python3-pip python3-psutil python3-redis python3-setuptools python3-wrapt python3-paho-mqtt python3-venv python3-dev redis-server rpm rsync smbclient snmp socat sshpass sudo subversion texlive-fonts-recommended texlive-latex-extra uuid-dev vim wget xml-twig-tools xmlstarlet xsltproc zip zlib1g-dev zlib1g"
 
-COPY install-pkgs.sh /install-pkgs.sh
 
-RUN bash /install-pkgs.sh
+RUN apt-get update --fix-missing && apt-get -y upgrade && apt-get update && apt-get install -y gnupg curl apt-utils ca-certificates wget
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt jammy-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+RUN curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+RUN apt-get install -y --no-install-recommends $INSTALL_PKGS
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install nodejs -yq --no-install-recommends
 
-ENV GVM_LIBS_VERSION="v22.9.1" \
-    OPENVAS_SCANNER_VERSION="v23.4.0" \
+# Install Yarn
+RUN curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update && apt-get install yarn -yq --no-install-recommends
+
+RUN rm -rf /var/lib/apt/lists/*
+
+# COPY install-pkgs.sh /install-pkgs.sh
+
+# RUN bash /install-pkgs.sh
+
+ENV GVM_LIBS_VERSION="v22.10.0" \
+    OPENVAS_SCANNER_VERSION="v23.6.0" \
     GVMD_VERSION="main" \
-    GSA_VERSION="main" \
-    GSAD_VERSION="v22.9.1" \
-    gvm_tools_version="v24.3.0" \
+    GSA_VERSION="v23.0.0" \
+    GSAD_VERSION="v22.10.0" \
+    gvm_tools_version="v24.6.0" \
     OPENVAS_SMB_VERSION="v22.5.6" \
     OSPD_OPENVAS_VERSION="v22.7.1" \
-    python_gvm_version="24.3.0" \
+    python_gvm_version="24.6.0" \
     PG_GVM_VERSION="main" \
     NOTUS_VERSION="v22.6.3" \
     SYNC_VERSION="main" \
@@ -51,15 +67,15 @@ RUN cd $SOURCE_DIR && \
     mkdir -p $BUILD_DIR/gvmd && cd $BUILD_DIR/gvmd && \
     cmake $SOURCE_DIR/gvmd \
         -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
-  	-DCMAKE_BUILD_TYPE=Release \
-  	-DLOCALSTATEDIR=/var \
-  	-DSYSCONFDIR=/etc \
-  	-DGVM_DATA_DIR=/var \
-  	-DGVMD_RUN_DIR=/run/gvmd \
-  	-DOPENVAS_DEFAULT_SOCKET=/run/ospd/ospd-openvas.sock \
-  	-DGVM_FEED_LOCK_PATH=/var/lib/gvm/feed-update.lock \
-  	-DSYSTEMD_SERVICE_DIR=/lib/systemd/system \
-  	-DLOGROTATE_DIR=/etc/logrotate.d && \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DLOCALSTATEDIR=/var \
+		-DSYSCONFDIR=/etc \
+		-DGVM_DATA_DIR=/var \
+		-DGVMD_RUN_DIR=/run/gvmd \
+		-DOPENVAS_DEFAULT_SOCKET=/run/ospd/ospd-openvas.sock \
+		-DGVM_FEED_LOCK_PATH=/var/lib/gvm/feed-update.lock \
+		-DSYSTEMD_SERVICE_DIR=/lib/systemd/system \
+		-DLOGROTATE_DIR=/etc/logrotate.d && \
     make -j$(nproc) && \
     make install
     
@@ -72,7 +88,7 @@ RUN cd $SOURCE_DIR && \
     mkdir -p $BUILD_DIR/pg-gvm && cd $BUILD_DIR/pg-gvm && \
     cmake $SOURCE_DIR/pg-gvm \
         -DCMAKE_BUILD_TYPE=Release \
-	-DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql && \
+		-DPostgreSQL_TYPE_INCLUDE_DIR=/usr/include/postgresql && \
     make -j$(nproc) && \
     make install
 
@@ -84,6 +100,7 @@ RUN cd $SOURCE_DIR && \
     git clone --branch $GSA_VERSION https://github.com/greenbone/gsa.git && \
     cd $SOURCE_DIR/gsa && \
     rm -rf build && \
+	npm install terser && \
     yarnpkg && \
     yarnpkg build && \
     mkdir -p $INSTALL_PREFIX/share/gvm/gsad/web/ && \
@@ -130,7 +147,7 @@ RUN cd $SOURCE_DIR && \
     cmake $SOURCE_DIR/openvas-scanner \
         -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
         -DCMAKE_BUILD_TYPE=Release \
-	-DINSTALL_OLD_SYNC_SCRIPT=OFF \
+		-DINSTALL_OLD_SYNC_SCRIPT=OFF \
         -DSYSCONFDIR=/etc \
         -DLOCALSTATEDIR=/var \
         -DOPENVAS_FEED_LOCK_PATH=/var/lib/openvas/feed-update.lock \
@@ -183,6 +200,7 @@ COPY sshd_config /sshd_config
 COPY scripts/* /
 RUN chmod +x /*.sh
 COPY branding/* /branding/
+RUN chmod +x /branding/*.sh
 RUN bash /branding/brand.sh
 ENV NMAP_PRIVILEGED=1
 RUN setcap cap_net_raw,cap_net_admin,cap_net_bind_service+eip /usr/bin/nmap

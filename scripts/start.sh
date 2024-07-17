@@ -174,6 +174,10 @@ if [ ! -f "/firstrun" ]; then
 	
 	chown gvm:gvm /usr/local/bin/greenbone-feed-sync
 	chmod 740 /usr/local/bin/greenbone-feed-sync
+	
+	# Downloading Python3-Impacket and Copying
+	git clone https://github.com/SecureAuthCorp/impacket.git /python3-impacket/
+	cp -R /python3-impacket/* /usr/share/doc/python3-impacket/
 
 	touch /firstrun 
 fi
@@ -222,17 +226,13 @@ find /var/lib/gvm/gvmd/report_formats -type f -name "generate" -exec chmod +x {}
 
 # Creating scanner certificates
 
-if [ ! -d /var/lib/gvm/CA ] || [ ! -d /var/lib/gvm/private ] || [ ! -d /var/lib/gvm/private/CA ] ||
-	[ ! -f /var/lib/gvm/CA/cacert.pem ] || [ ! -f /var/lib/gvm/CA/clientcert.pem ] ||
-	[ ! -f /var/lib/gvm/CA/servercert.pem ] || [ ! -f /var/lib/gvm/private/CA/cakey.pem ] ||
-	[ ! -f /var/lib/gvm/private/CA/clientkey.pem ] || [ ! -f /var/lib/gvm/private/CA/serverkey.pem ]; then
+if [ ! -d /var/lib/gvm/CA ] || [ ! -d /var/lib/gvm/private ] || [ ! -d /var/lib/gvm/private/CA ] || [ ! -f /var/lib/gvm/CA/cacert.pem ] || [ ! -f /var/lib/gvm/CA/clientcert.pem ] || [ ! -f /var/lib/gvm/CA/servercert.pem ] || [ ! -f /var/lib/gvm/private/CA/cakey.pem ] || [ ! -f /var/lib/gvm/private/CA/clientkey.pem ] || [ ! -f /var/lib/gvm/private/CA/serverkey.pem ]; then
 	echo "Creating certs folder..."
-	mkdir -p /var/lib/gvm/CA
-	mkdir -p /var/lib/gvm/private
+	mkdir -p /var/lib/gvm/CA/
+	mkdir -p /var/lib/gvm/private/
 
 	echo "Generating certs..."
 	gvm-manage-certs -a
-
 	chown gvm:gvm -R /var/lib/gvm/
 fi
 
