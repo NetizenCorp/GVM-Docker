@@ -10,7 +10,7 @@ RUN bash /install-pkgs.sh
 ENV GVM_LIBS_VERSION="v22.10.0" \
     OPENVAS_SCANNER_VERSION="v23.6.0" \
     GVMD_VERSION="main" \
-    GSA_VERSION="v23.0.0" \
+    GSA_VERSION="23.0.0" \
     GSAD_VERSION="v22.10.0" \
     gvm_tools_version="v24.6.0" \
     OPENVAS_SMB_VERSION="v22.5.6" \
@@ -81,14 +81,17 @@ RUN cd $SOURCE_DIR && \
     #
     
 RUN cd $SOURCE_DIR && \
-    git clone --branch $GSA_VERSION https://github.com/greenbone/gsa.git && \
-    cd $SOURCE_DIR/gsa && \
-    rm -rf build && \
-    npm install terser && \
-    yarnpkg && \
-    yarnpkg build && \
+    # git clone --branch $GSA_VERSION https://github.com/greenbone/gsa.git && \
+	# cd $SOURCE_DIR/gsa && \
+    # rm -rf build && \
+    # npm install terser && \
+    # yarnpkg && \
+    # yarnpkg build && \
+	curl -f -L https://github.com/greenbone/gsa/releases/download/v$GSA_VERSION/gsa-dist-$GSA_VERSION.tar.gz -o $SOURCE_DIR/gsa-$GSA_VERSION.tar.gz && \
+	mkdir -p $SOURCE_DIR/gsa && \
+	tar -C $SOURCE_DIR/gsa -xvzf $SOURCE_DIR/gsa-$GSA_VERSION.tar.gz && \
     mkdir -p $INSTALL_PREFIX/share/gvm/gsad/web/ && \
-    cp -r build/* $INSTALL_PREFIX/share/gvm/gsad/web/
+    cp -rv $SOURCE_DIR/gsa/* $INSTALL_PREFIX/share/gvm/gsad/web/
     
     #
     # Install Greenbone Security Agent Daemon (GSAD)
