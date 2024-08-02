@@ -12,18 +12,18 @@ The docker container is based on the latest version of Greenbone Vulnerability M
 A remote scanner can be found by visiting our [Openvas-Docker Github Repo](https://github.com/NetizenCorp/OpenVAS-Docker).
 
 ## Table of Contents
-- [Linux Installation Instructions](https://github.com/NetizenCorp/GVM-Docker/tree/dev?tab=readme-ov-file#docker-system-installation-linux-amdarm-64-bit-only)
-- [Windows Installation Instruction](https://github.com/NetizenCorp/GVM-Docker/tree/dev?tab=readme-ov-file#docker-system-installation-windows-wsl2-amd-64-bit-only)
-- [PostgreSQL Upgrade Instructions](https://github.com/NetizenCorp/GVM-Docker/tree/dev#postgresql-upgrade)
-- [Architecture](https://github.com/NetizenCorp/GVM-Docker/tree/dev#architecture)
-- [Docker Tags](https://github.com/NetizenCorp/GVM-Docker/tree/dev#docker-tags)
-- [Estimated Hardware Requirements](https://github.com/NetizenCorp/GVM-Docker/tree/dev#estimated-hardware-requirements)
-- [About](https://github.com/NetizenCorp/GVM-Docker/tree/dev#about)
+- [Linux Installation Instructions](https://github.com/NetizenCorp/GVM-Docker/tree/main?tab=readme-ov-file#docker-system-installation-linux-amdarm-64-bit-only)
+- [Windows Installation Instruction](https://github.com/NetizenCorp/GVM-Docker/tree/main?tab=readme-ov-file#docker-system-installation-windows-wsl2-amd-64-bit-only)
+- [PostgreSQL Upgrade Instructions](https://github.com/NetizenCorp/GVM-Docker/tree/main#postgresql-upgrade)
+- [Architecture](https://github.com/NetizenCorp/GVM-Docker/tree/main#architecture)
+- [Docker Tags](https://github.com/NetizenCorp/GVM-Docker/tree/main#docker-tags)
+- [Estimated Hardware Requirements](https://github.com/NetizenCorp/GVM-Docker/tree/main#estimated-hardware-requirements)
+- [About](https://github.com/NetizenCorp/GVM-Docker/tree/main#about)
 
 ## Installation Instructions
 
 ### Docker System Installation (Linux AMD/ARM 64-bit Only)
-1. nstall the required packages, docker, and docker-compose on your Linux system.
+1. Install the required packages, docker, and docker-compose on your Linux system.
 ```bash
 sudo apt update
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common docker.io docker-compose-v2
