@@ -3,7 +3,7 @@
 Visit our Website: https://www.netizen.net
 
 # Greenbone Vulnerability Manager/Scanner
-## Latest Version: 23.0.0
+## Latest Version: 23.2.1
 ![Docker Pulls](https://img.shields.io/docker/pulls/netizensoc/gvm-scanner?style=plastic)
 ![GitHub](https://img.shields.io/github/license/thecomet28/gvm-docker)
 
@@ -26,7 +26,7 @@ A remote scanner can be found by visiting our [Openvas-Docker Github Repo](https
 1. nstall the required packages, docker, and docker-compose on your Linux system.
 ```bash
 sudo apt update
-sudo apt install -y apt-transport-https ca-certificates curl software-properties-common docker.io docker-compose
+sudo apt install -y apt-transport-https ca-certificates curl software-properties-common docker.io docker-compose-v2
 ```
 2. Create a directory and download the docker-compose.yml file from GitHub. ${USER} is the username of the user(s).
 ```bash
@@ -68,7 +68,7 @@ volumes:
 ```
 5. Next, it's time to stand up the docker image using docker-compose.
 ```bash
-sudo docker-compose up -d # The -d option is for a detached docker image
+sudo docker compose up -d # The -d option is for a detached docker image
 ```
 It will take time for the container to be ready as it compiles the NVTs, CVE, CERTS, and SCAP data. To monitor this activity use the docker logs command.
 ```bash
