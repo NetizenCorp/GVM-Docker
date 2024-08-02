@@ -1,7 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 apt-get update
-
 apt-get install -y gnupg curl apt-utils ca-certificates wget
 
 echo "deb http://apt.postgresql.org/pub/repos/apt jammy-pgdg main" > /etc/apt/sources.list.d/pgdg.list
@@ -9,6 +8,7 @@ echo "deb http://apt.postgresql.org/pub/repos/apt jammy-pgdg main" > /etc/apt/so
 curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 
 apt-get update
+apt-get upgrade -y
 
 INSTALL_PKGS="
 bison \
@@ -40,6 +40,7 @@ libpaho-mqtt-dev \
 libnet1-dev \
 libpcap-dev \
 libcap2-bin \
+libcjson-dev \
 libpopt-dev \
 libpq-dev \
 libradcli-dev \
@@ -48,6 +49,7 @@ libssh-gcrypt-dev \
 libbsd-dev \
 libunistring-dev \
 libxml2-dev \
+libcurl4-gnutls-dev \
 mosquitto \
 nano \
 nmap \
@@ -98,10 +100,10 @@ zlib1g"
 
 echo $INSTALL_PKGS
 
-apt-get install -yq --no-install-recommends $INSTALL_PKGS
+apt-get install -y --no-install-recommends $INSTALL_PKGS
 
 # Install Node.js
-curl -sL https://deb.nodesource.com/setup_14.x | bash -
+curl -sL https://deb.nodesource.com/setup_18.x | bash -
 apt-get install nodejs -yq --no-install-recommends
 
 

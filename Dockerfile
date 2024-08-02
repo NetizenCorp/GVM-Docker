@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:jammy
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=C.UTF-8
@@ -7,17 +7,17 @@ COPY install-pkgs.sh /install-pkgs.sh
 
 RUN bash /install-pkgs.sh
 
-ENV GVM_LIBS_VERSION="v22.7.0" \
-    OPENVAS_SCANNER_VERSION="v22.7.3" \
-    GVMD_VERSION="main" \
-    GSA_VERSION="main" \
-    GSAD_VERSION="v22.5.2" \
-    gvm_tools_version="v23.4.0" \
-    OPENVAS_SMB_VERSION="v22.5.3" \
-    OSPD_OPENVAS_VERSION="v22.5.4" \
-    python_gvm_version="23.5.1" \
+ENV GVM_LIBS_VERSION="v22.10.0" \
+    OPENVAS_SCANNER_VERSION="v23.8.2" \
+    GVMD_VERSION="v23.8.1" \
+    GSA_VERSION="23.2.1" \
+    GSAD_VERSION="v22.11.0" \
+    gvm_tools_version="v24.7.0" \
+    OPENVAS_SMB_VERSION="v22.5.6" \
+    OSPD_OPENVAS_VERSION="v22.7.1" \
+    python_gvm_version="24.7.0" \
     PG_GVM_VERSION="main" \
-    NOTUS_VERSION="v22.5.0" \
+    NOTUS_VERSION="v22.6.3" \
     SYNC_VERSION="main" \
     INSTALL_PREFIX="/usr/local" \
     SOURCE_DIR="/source" \
@@ -50,16 +50,16 @@ RUN cd $SOURCE_DIR && \
     git clone --branch $GVMD_VERSION https://github.com/greenbone/gvmd.git && \
     mkdir -p $BUILD_DIR/gvmd && cd $BUILD_DIR/gvmd && \
     cmake $SOURCE_DIR/gvmd \
-        -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
-  	-DCMAKE_BUILD_TYPE=Release \
-  	-DLOCALSTATEDIR=/var \
-  	-DSYSCONFDIR=/etc \
-  	-DGVM_DATA_DIR=/var \
-  	-DGVMD_RUN_DIR=/run/gvmd \
-  	-DOPENVAS_DEFAULT_SOCKET=/run/ospd/ospd-openvas.sock \
-  	-DGVM_FEED_LOCK_PATH=/var/lib/gvm/feed-update.lock \
-  	-DSYSTEMD_SERVICE_DIR=/lib/systemd/system \
-  	-DLOGROTATE_DIR=/etc/logrotate.d && \
+	-DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
+	-DCMAKE_BUILD_TYPE=Release \
+	-DLOCALSTATEDIR=/var \
+	-DSYSCONFDIR=/etc \
+	-DGVM_DATA_DIR=/var \
+	-DGVMD_RUN_DIR=/run/gvmd \
+	-DOPENVAS_DEFAULT_SOCKET=/run/ospd/ospd-openvas.sock \
+	-DGVM_FEED_LOCK_PATH=/var/lib/gvm/feed-update.lock \
+	-DSYSTEMD_SERVICE_DIR=/lib/systemd/system \
+	-DLOGROTATE_DIR=/etc/logrotate.d && \
     make -j$(nproc) && \
     make install
     
@@ -81,13 +81,17 @@ RUN cd $SOURCE_DIR && \
     #
     
 RUN cd $SOURCE_DIR && \
-    git clone --branch $GSA_VERSION https://github.com/greenbone/gsa.git && \
-    cd $SOURCE_DIR/gsa && \
-    rm -rf build && \
-    yarnpkg && \
-    yarnpkg build && \
+    # git clone --branch $GSA_VERSION https://github.com/greenbone/gsa.git && \
+	# cd $SOURCE_DIR/gsa && \
+    # rm -rf build && \
+    # npm install terser && \
+    # yarnpkg && \
+    # yarnpkg build && \
+	curl -f -L https://github.com/greenbone/gsa/releases/download/v$GSA_VERSION/gsa-dist-$GSA_VERSION.tar.gz -o $SOURCE_DIR/gsa-$GSA_VERSION.tar.gz && \
+	mkdir -p $SOURCE_DIR/gsa && \
+	tar -C $SOURCE_DIR/gsa -xvzf $SOURCE_DIR/gsa-$GSA_VERSION.tar.gz && \
     mkdir -p $INSTALL_PREFIX/share/gvm/gsad/web/ && \
-    cp -r build/* $INSTALL_PREFIX/share/gvm/gsad/web/
+    cp -rv $SOURCE_DIR/gsa/* $INSTALL_PREFIX/share/gvm/gsad/web/
     
     #
     # Install Greenbone Security Agent Daemon (GSAD)
@@ -128,7 +132,7 @@ RUN cd $SOURCE_DIR && \
     git clone --branch $OPENVAS_SCANNER_VERSION https://github.com/greenbone/openvas-scanner.git && \
     mkdir -p $BUILD_DIR/openvas-scanner && cd $BUILD_DIR/openvas-scanner && \
     cmake $SOURCE_DIR/openvas-scanner \
-        -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
+    	-DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
         -DCMAKE_BUILD_TYPE=Release \
 	-DINSTALL_OLD_SYNC_SCRIPT=OFF \
         -DSYSCONFDIR=/etc \
@@ -179,15 +183,12 @@ RUN python3 -m pip install gvm-tools && \
     echo "/usr/local/lib" > /etc/ld.so.conf.d/openvas.conf && ldconfig
 
 COPY report_formats/* /report_formats/
-
 COPY sshd_config /sshd_config
-
 COPY scripts/* /
-
 RUN chmod +x /*.sh
-
+COPY branding/* /branding/
+RUN chmod +x /branding/*.sh
+RUN bash /branding/brand.sh
 ENV NMAP_PRIVILEGED=1
-
 RUN setcap cap_net_raw,cap_net_admin,cap_net_bind_service+eip /usr/bin/nmap
-
 CMD '/start.sh'
