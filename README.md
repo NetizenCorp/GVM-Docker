@@ -21,10 +21,11 @@ A remote scanner can be found by visiting our [Openvas-Docker Github Repo](https
 - [Estimated Hardware Requirements](https://github.com/NetizenCorp/GVM-Docker/tree/dev#estimated-hardware-requirements)
 - [About](https://github.com/NetizenCorp/GVM-Docker/tree/dev#about)
 
+
 ## Installation Instructions
 
 ### Docker System Installation (Linux AMD/ARM 64-bit Only)
-1. nstall the required packages, docker, and docker-compose on your Linux system.
+1. Install the required packages, docker, and docker-compose on your Linux system.
 ```bash
 sudo apt update
 sudo apt install -y apt-transport-https ca-certificates curl software-properties-common docker.io docker-compose-v2
