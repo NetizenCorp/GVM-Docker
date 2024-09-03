@@ -44,7 +44,7 @@ services:
     gvm:
         image: netizensoc/gvm-scanner:[latest|dev] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image (WARNING: May contain bugs and issues).
         volumes:
-          - gvm-data:/data              # DO NOT MODIFY
+          - gvm-data:/data              # DO NOT MODIFY unless establishing the external docker drive
         environment:
           - USERNAME="admin"            # You can leave the username as admin or change to whatever you like
           - PASSWORD="admin"            # Please use 15+ Characters consisting of numbers, lower & uppercase letters, and a special character.
@@ -65,6 +65,8 @@ services:
             max-file: "3"
 volumes:
     gvm-data:
+	name: gvm-data
+	external: true
 ```
 5. Next, it's time to stand up the docker image using docker-compose.
 ```bash
@@ -147,7 +149,7 @@ services:
     gvm:
         image: netizensoc/gvm-scanner:[latest|dev] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image (WARNING: May contain bugs and issues).
         volumes:
-          - gvm-data:/data              # DO NOT MODIFY
+          - gvm-data:/data              # DO NOT MODIFY unless establishing the external docker drive
         environment:
           - USERNAME="admin"            # You can leave the username as admin or change to whatever you like
           - PASSWORD="admin"            # Please use 15+ Characters consisting of numbers, lower & uppercase letters, and a special character.
@@ -168,6 +170,8 @@ services:
             max-file: "3"
 volumes:
     gvm-data:
+	name: gvm-data
+	external: true
 ```
 12. It's time to stand up the docker image using docker-compose. Open your command prompt, navigate to the directory with the docker-compose.yml file, and type the following to create/execute the image.
 ```bash
@@ -177,6 +181,49 @@ docker compose up -d # The -d option is for a detached docker image
 13. If successful, you should see everything created in Docker Desktop. The container will take time to be ready as it compiles the NVTs, CVE, CERTS, and SCAP data. To monitor this activity, use the Docker Desktop logs under your newly created container.
 
 After completing everything, go to https://[Host IP Address]/ to access the scanner. Use the credentials you provided in the yml file.
+
+## Upgrade Instructions (REMINDER: Always backup or take a snapshot of your data before executing the upgrade.)
+1. Run the following commands to backup the sockets and authorized keys
+```bash
+sudo docker exec -it [container name] bash
+mkdir /data/sockets/
+cp -R /sockets/* /data/sockets/
+cp /var/lib/gvm/.ssh/authorized_keys /data
+```
+2. Verify that all the data exists and matches between locations. Once verified, exit the container.
+3. Stop the container without deleting it
+```bash
+sudo docker-compose stop 
+```
+OR (if using docker compose V2)
+```bash
+sudo docker compose stop
+```
+4. Once stopped, pull the latest image of GVM
+```bash
+sudo docker pull netizensoc/gvm-scanner:latest
+```
+5. For those updating from versions prior to 23.2.1, you will need to modify the YAML file to make the drive external. This will preserve the drive and prevent accidental deletion. You will need to get the name of the volume and modify the name of the volume in the YAML file. If you are upgrading from version 23.2.1 or later, you can skip to step 7.
+```bash
+sudo docker volume ls
+```
+Copy the volume name that is outputted and put it into the YAML file in each location the volume is referenced 
+```bash
+DRIVER    VOLUME NAME
+local     gvm-data
+```
+6. Open the YAML file to update the configuration and volume name that was copied. Verify everything is correct and pointing to the correct volume before executing.
+```bash
+### Update this section at the bottom of the file. Don't forget to check the volume name near the top of the file
+volumes:
+    gvm-data:
+	name: gvm-data
+	external: true
+```
+7. Finally, let's stand up the docker container.
+```bash
+sudo docker compose up -d
+```
 
 ## PostgreSQL Upgrade
 If you upgrade from a previous major version of PostgreSQL 13 or under, you must upgrade your database before installation. The instructions below will guide you through the upgrade by backing up your database, recreating the docker image, and restoring the backup. The new version of GVM uses Postgres version 14. Please follow the steps below.
