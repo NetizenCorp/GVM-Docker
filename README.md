@@ -184,7 +184,7 @@ docker compose up -d # The -d option is for a detached docker image
 After completing everything, go to https://[Host IP Address]/ to access the scanner. Use the credentials you provided in the yml file.
 
 ## Upgrade Instructions (REMINDER: Always backup or take a snapshot of your data before executing the upgrade.)
-1. Run the following commands to backup the sockets and authorized keys
+1. If you are using external/remote scanners and want to maintain connectivity, run the following commands to backup the sockets and authorized keys. If you are not using remote scanners (just using the default built-in scanners), skip step 1 and step 2.
 ```bash
 sudo docker exec -it [container name] bash
 mkdir /data/sockets/
@@ -221,10 +221,17 @@ volumes:
 	name: gvm-data
 	external: true
 ```
-7. Finally, let's stand up the docker container.
+7. Next, stand up the docker container to update the image. If you need to restore remote scanner sockets and the authorized key file, go to steps 8 & 9.
 ```bash
 sudo docker compose up -d
 ```
+8. Remote scanner connectivity restoration: Once the image is fully up and running (pulled NVT updates and everything), copy the authorized key file and sockets back into their original locations. 
+```bash
+sudo docker exec -it [container name] bash
+cp -R /data/sockets/*  /sockets/
+cp /data/authorized_keys  /var/lib/gvm/.ssh/authorized_keys
+```
+9. Once copied, verify you have connectivity by clicking the Sheild under the Scanners page. Note if unable to connect you may need to reboot the master scanner and remote scanner images.
 
 ## PostgreSQL Upgrade
 If you upgrade from a previous major version of PostgreSQL 13 or under, you must upgrade your database before installation. The instructions below will guide you through the upgrade by backing up your database, recreating the docker image, and restoring the backup. The new version of GVM uses Postgres version 14. Please follow the steps below.
