@@ -23,3 +23,5 @@ services:
             max-file: "3"
 volumes:
     gvm-data:
+        name: gvm-data
+        external: true

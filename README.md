@@ -12,13 +12,15 @@ The docker container is based on the latest version of Greenbone Vulnerability M
 A remote scanner can be found by visiting our [Openvas-Docker Github Repo](https://github.com/NetizenCorp/OpenVAS-Docker).
 
 ## Table of Contents
-- [Linux Installation Instructions](https://github.com/NetizenCorp/GVM-Docker/tree/main?tab=readme-ov-file#docker-system-installation-linux-amdarm-64-bit-only)
-- [Windows Installation Instruction](https://github.com/NetizenCorp/GVM-Docker/tree/main?tab=readme-ov-file#docker-system-installation-windows-wsl2-amd-64-bit-only)
-- [PostgreSQL Upgrade Instructions](https://github.com/NetizenCorp/GVM-Docker/tree/main#postgresql-upgrade)
-- [Architecture](https://github.com/NetizenCorp/GVM-Docker/tree/main#architecture)
-- [Docker Tags](https://github.com/NetizenCorp/GVM-Docker/tree/main#docker-tags)
-- [Estimated Hardware Requirements](https://github.com/NetizenCorp/GVM-Docker/tree/main#estimated-hardware-requirements)
-- [About](https://github.com/NetizenCorp/GVM-Docker/tree/main#about)
+- [Linux Installation Instructions](https://github.com/NetizenCorp/GVM-Docker/tree/dev?tab=readme-ov-file#docker-system-installation-linux-amdarm-64-bit-only)
+- [Windows Installation Instruction](https://github.com/NetizenCorp/GVM-Docker/tree/dev?tab=readme-ov-file#docker-system-installation-windows-wsl2-amd-64-bit-only)
+- [Upgrade Instructions](https://github.com/NetizenCorp/GVM-Docker/tree/dev?tab=readme-ov-file#upgrade-instructions-reminder-always-backup-or-take-a-snapshot-of-your-data-before-executing-the-upgrade)
+- [PostgreSQL Upgrade Instructions](https://github.com/NetizenCorp/GVM-Docker/tree/dev#postgresql-upgrade)
+- [Architecture](https://github.com/NetizenCorp/GVM-Docker/tree/dev#architecture)
+- [Docker Tags](https://github.com/NetizenCorp/GVM-Docker/tree/dev#docker-tags)
+- [Estimated Hardware Requirements](https://github.com/NetizenCorp/GVM-Docker/tree/dev#estimated-hardware-requirements)
+- [About](https://github.com/NetizenCorp/GVM-Docker/tree/dev#about)
+
 
 ## Installation Instructions
 
@@ -44,7 +46,7 @@ services:
     gvm:
         image: netizensoc/gvm-scanner:[latest|dev] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image (WARNING: May contain bugs and issues).
         volumes:
-          - gvm-data:/data              # DO NOT MODIFY
+          - gvm-data:/data              # DO NOT MODIFY unless establishing the external docker drive
         environment:
           - USERNAME="admin"            # You can leave the username as admin or change to whatever you like
           - PASSWORD="admin"            # Please use 15+ Characters consisting of numbers, lower & uppercase letters, and a special character.
@@ -65,6 +67,8 @@ services:
             max-file: "3"
 volumes:
     gvm-data:
+	name: gvm-data
+	external: true
 ```
 5. Next, it's time to stand up the docker image using docker-compose.
 ```bash
@@ -147,7 +151,7 @@ services:
     gvm:
         image: netizensoc/gvm-scanner:[latest|dev] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image (WARNING: May contain bugs and issues).
         volumes:
-          - gvm-data:/data              # DO NOT MODIFY
+          - gvm-data:/data              # DO NOT MODIFY unless establishing the external docker drive
         environment:
           - USERNAME="admin"            # You can leave the username as admin or change to whatever you like
           - PASSWORD="admin"            # Please use 15+ Characters consisting of numbers, lower & uppercase letters, and a special character.
@@ -161,13 +165,15 @@ services:
           - "2222:22"   # SSH for remote sensors. You can comment the line out with the # if you don't plan on using remote scanners.
           # - "9390:9390" # For GVM API Access. Leave commented if you do not plan on using the API for external web application access.
         restart: unless-stopped # Remove if your using for penetration testing or one-time scans. Only use if using for production/continuous scanning
-		logging:
+	logging:
           driver: "json-file"
           options:
             max-size: "1k"
             max-file: "3"
 volumes:
     gvm-data:
+	name: gvm-data
+	external: true
 ```
 12. It's time to stand up the docker image using docker-compose. Open your command prompt, navigate to the directory with the docker-compose.yml file, and type the following to create/execute the image.
 ```bash
@@ -177,6 +183,56 @@ docker compose up -d # The -d option is for a detached docker image
 13. If successful, you should see everything created in Docker Desktop. The container will take time to be ready as it compiles the NVTs, CVE, CERTS, and SCAP data. To monitor this activity, use the Docker Desktop logs under your newly created container.
 
 After completing everything, go to https://[Host IP Address]/ to access the scanner. Use the credentials you provided in the yml file.
+
+## Upgrade Instructions (REMINDER: Always backup or take a snapshot of your data before executing the upgrade.)
+1. If you are using external/remote scanners and want to maintain connectivity, run the following commands to backup the sockets and authorized keys. If you are not using remote scanners (just using the default built-in scanners), skip step 1 and step 2.
+```bash
+sudo docker exec -it [container name] bash
+mkdir /data/sockets/
+cp -R /sockets/* /data/sockets/
+cp /var/lib/gvm/.ssh/authorized_keys /data
+```
+2. Verify that all the data exists and matches between locations. Once verified, exit the container.
+3. Stop the container without deleting it
+```bash
+sudo docker-compose stop 
+```
+OR (if using docker compose V2)
+```bash
+sudo docker compose stop
+```
+4. Once stopped, pull the latest image of GVM
+```bash
+sudo docker pull netizensoc/gvm-scanner:latest
+```
+5. For those updating from versions prior to 23.2.1, you will need to modify the YAML file to make the drive external. This will preserve the drive and prevent accidental deletion. You will need to get the name of the volume and modify the name of the volume in the YAML file. If you are upgrading from version 23.2.1 or later, you can skip to step 7.
+```bash
+sudo docker volume ls
+```
+Copy the volume name that is outputted and put it into the YAML file in each location the volume is referenced 
+```bash
+DRIVER    VOLUME NAME
+local     gvm-data
+```
+6. Open the YAML file to update the configuration and volume name that was copied. Verify everything is correct and pointing to the correct volume before executing.
+```bash
+### Update this section at the bottom of the file. Don't forget to check the volume name near the top of the file
+volumes:
+    gvm-data:
+	name: gvm-data
+	external: true
+```
+7. Next, stand up the docker container to update the image. If you need to restore remote scanner sockets and the authorized key file, go to steps 8 & 9.
+```bash
+sudo docker compose up -d
+```
+8. Remote scanner connectivity restoration: Once the image is fully up and running (pulled NVT updates and everything), copy the authorized key file and sockets back into their original locations. 
+```bash
+sudo docker exec -it [container name] bash
+cp -R /data/sockets/*  /sockets/
+cp /data/authorized_keys  /var/lib/gvm/.ssh/authorized_keys
+```
+9. Once copied, verify you have connectivity by clicking the Sheild under the Scanners page. Note if unable to connect you may need to reboot the master scanner and remote scanner images.
 
 ## PostgreSQL Upgrade
 If you upgrade from a previous major version of PostgreSQL 13 or under, you must upgrade your database before installation. The instructions below will guide you through the upgrade by backing up your database, recreating the docker image, and restoring the backup. The new version of GVM uses Postgres version 14. Please follow the steps below.
