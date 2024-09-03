@@ -14,6 +14,7 @@ A remote scanner can be found by visiting our [Openvas-Docker Github Repo](https
 ## Table of Contents
 - [Linux Installation Instructions](https://github.com/NetizenCorp/GVM-Docker/tree/dev?tab=readme-ov-file#docker-system-installation-linux-amdarm-64-bit-only)
 - [Windows Installation Instruction](https://github.com/NetizenCorp/GVM-Docker/tree/dev?tab=readme-ov-file#docker-system-installation-windows-wsl2-amd-64-bit-only)
+- [Upgrade Instructions](https://github.com/NetizenCorp/GVM-Docker/tree/dev?tab=readme-ov-file#upgrade-instructions-reminder-always-backup-or-take-a-snapshot-of-your-data-before-executing-the-upgrade)
 - [PostgreSQL Upgrade Instructions](https://github.com/NetizenCorp/GVM-Docker/tree/dev#postgresql-upgrade)
 - [Architecture](https://github.com/NetizenCorp/GVM-Docker/tree/dev#architecture)
 - [Docker Tags](https://github.com/NetizenCorp/GVM-Docker/tree/dev#docker-tags)
