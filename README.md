@@ -67,8 +67,6 @@ services:
             max-file: "3"
 volumes:
     gvm-data:
-	name: gvm-data
-	external: true
 ```
 5. Next, it's time to stand up the docker image using docker-compose.
 ```bash
@@ -172,8 +170,6 @@ services:
             max-file: "3"
 volumes:
     gvm-data:
-	name: gvm-data
-	external: true
 ```
 12. It's time to stand up the docker image using docker-compose. Open your command prompt, navigate to the directory with the docker-compose.yml file, and type the following to create/execute the image.
 ```bash
@@ -214,13 +210,13 @@ Copy the volume name that is outputted and put it into the YAML file in each loc
 DRIVER    VOLUME NAME
 local     gvm-data
 ```
-6. Open the YAML file to update the configuration and volume name that was copied. Verify everything is correct and pointing to the correct volume before executing.
+6. Open the YAML file to add the following configuration and update all volume names with the name that was copied. Verify everything is correct and pointing to the correct volume before executing.
 ```bash
-### Update this section at the bottom of the file. Don't forget to check the volume name near the top of the file
+### Update this section at the bottom of the file. Also update the volume name at the top of the file.
 volumes:
     gvm-data:
-	name: gvm-data
-	external: true
+	name: gvm-data  # ADD THIS LINE
+	external: true  # ADD THIS LINE
 ```
 7. Next, stand up the docker container to update the image. If you need to restore remote scanner sockets and the authorized key file, go to steps 8 & 9.
 ```bash
