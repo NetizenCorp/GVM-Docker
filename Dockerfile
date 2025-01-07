@@ -7,17 +7,17 @@ COPY install-pkgs.sh /install-pkgs.sh
 
 RUN bash /install-pkgs.sh
 
-ENV GVM_LIBS_VERSION="v22.10.0" \
-    OPENVAS_SCANNER_VERSION="v23.8.2" \
-    GVMD_VERSION="v23.8.1" \
-    GSA_VERSION="23.2.1" \
-    GSAD_VERSION="v22.11.0" \
-    gvm_tools_version="v24.7.0" \
+ENV GVM_LIBS_VERSION="v22.15.0" \
+    OPENVAS_SCANNER_VERSION="v23.14.0" \
+    GVMD_VERSION="v24.1.2" \
+    GSA_VERSION="24.1.0" \
+    GSAD_VERSION="v24.1.0" \
+    gvm_tools_version="v24.12.1" \
     OPENVAS_SMB_VERSION="v22.5.6" \
     OSPD_OPENVAS_VERSION="v22.7.1" \
-    python_gvm_version="24.7.0" \
+    python_gvm_version="24.12.0" \
     PG_GVM_VERSION="main" \
-    NOTUS_VERSION="v22.6.3" \
+    NOTUS_VERSION="v22.6.5" \
     SYNC_VERSION="main" \
     INSTALL_PREFIX="/usr/local" \
     SOURCE_DIR="/source" \
