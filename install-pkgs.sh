@@ -34,6 +34,7 @@ libgpgme-dev \
 libhiredis-dev \
 libical-dev \
 libksba-dev \
+libkrb5-dev \
 libldap2-dev \
 libmicrohttpd-dev \
 libpaho-mqtt-dev \
