@@ -25,7 +25,7 @@ g++ \
 gnupg \
 gnutls-bin \
 gpgsm \
-heimdal-dev \
+heimdal-multidev \
 libgcrypt20-dev \
 libjson-glib-dev \
 libglib2.0-dev \
