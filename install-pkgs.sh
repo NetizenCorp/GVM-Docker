@@ -26,6 +26,7 @@ gnupg \
 gnutls-bin \
 gpgsm \
 heimdal-multidev \
+krb5-multidev \
 libgcrypt20-dev \
 libjson-glib-dev \
 libglib2.0-dev \
@@ -34,7 +35,6 @@ libgpgme-dev \
 libhiredis-dev \
 libical-dev \
 libksba-dev \
-libkrb5-dev \
 libldap2-dev \
 libmicrohttpd-dev \
 libpaho-mqtt-dev \
@@ -51,7 +51,6 @@ libbsd-dev \
 libunistring-dev \
 libxml2-dev \
 libcurl4-gnutls-dev \
-mosquitto \
 nano \
 nmap \
 nsis \
@@ -65,19 +64,19 @@ postfix \
 python3 \
 python3-cffi \
 python3-defusedxml \
-python3-gnupg \
 python3-impacket \
 python3-lxml \
 python3-packaging \
 python3-paramiko \
 python3-pip \
-python3-psutil \
 python3-redis \
 python3-setuptools \
 python3-wrapt \
 python3-paho-mqtt \
 python3-venv \
 python3-dev \
+python3-gnupg \
+python3-psutil \
 redis-server \
 rpm \
 rsync \
