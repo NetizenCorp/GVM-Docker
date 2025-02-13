@@ -54,19 +54,14 @@ while  [ "${X}" != "PONG" ]; do
 done
 echo "Redis ready."
 
-# Starting Mosquitto
-
-echo "Starting Mosquitto..."
-/usr/sbin/mosquitto &
-
-# Copy server uri on first run
+# Copy server uri on the first run for ospd-openvas
 
 if [ ! -f /mqttfirstrun ]; then
-	echo "mqtt_server_uri = localhost:1883" | tee -a /etc/openvas/openvas.conf
-	touch /mqttfirstrun
+	echo "openvasd_server = http://localhost:3000\n" | tee -a /etc/openvas/openvas.conf
+ 	touch /mqttfirstrun
 fi
 
-# Creating data folder
+# Creating data folder that is linked to the docker volume
 
 if [ ! -d /data ]; then
 	echo "Creating Data folder..."
@@ -172,9 +167,6 @@ if [ ! -f "/firstrun" ]; then
 	chown gvm:gvm /usr/local/sbin/gvmd
 	chmod 6750 /usr/local/sbin/gvmd
 	
-	chown gvm:gvm /usr/local/bin/greenbone-feed-sync
-	chmod 740 /usr/local/bin/greenbone-feed-sync
-	
 	# Downloading Python3-Impacket and Copying
 	git clone https://github.com/SecureAuthCorp/impacket.git /python3-impacket/
 	cp -R /python3-impacket/* /usr/share/doc/python3-impacket/
@@ -272,7 +264,7 @@ service postfix start
 # Starting OSPD-Openvas
 
 echo "Starting Open Scanner Protocol daemon for OpenVAS..."
-ospd-openvas --log-file /var/log/gvm/ospd-openvas.log --unix-socket /run/ospd/ospd-openvas.sock --socket-mode 0o666 --log-level INFO
+ospd-openvas --unix-socket /run/ospd/ospd-openvas.sock --pid-file /run/ospd/ospd-openvas.pid --log-file /var/log/gvm/ospd-openvas.log --lock-file-dir /var/lib/openvas --socket-mode 0o776 --notus-feed-dir /var/lib/notus/advisories --log-level INFO
 
 # Waiting for OSPD Socket Creations
 
@@ -280,10 +272,10 @@ while [ ! -S /run/ospd/ospd-openvas.sock ]; do
 	sleep 1
 done
 
-# Starting Notus Scanner
+# Starting OpenVAS Daemon Service
 
-echo "Starting Notus Scanner..."
-/usr/local/bin/notus-scanner --products-directory /var/lib/notus/products --log-file /var/log/gvm/notus-scanner.log
+echo "Starting OpenVAS Daemon..."
+su -c "/usr/local/bin/openvasd --mode service_notus --products /var/lib/notus/products --advisories /var/lib/notus/advisories --listening 127.0.0.1:3000 &" gvm
 
 # Creating OSPD link
 
