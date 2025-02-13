@@ -15,7 +15,6 @@ ENV GVM_LIBS_VERSION="v22.17.0" \
     gvm_tools_version="v25.1.1" \
     OPENVAS_SMB_VERSION="v22.5.6" \
     OSPD_OPENVAS_VERSION="v22.8.0" \
-    python_gvm_version="26.0.0" \
     PG_GVM_VERSION="main" \
     SYNC_VERSION="main" \
     INSTALL_PREFIX="/usr/local" \
