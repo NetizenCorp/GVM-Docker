@@ -7,17 +7,16 @@ COPY install-pkgs.sh /install-pkgs.sh
 
 RUN bash /install-pkgs.sh
 
-ENV GVM_LIBS_VERSION="v22.15.0" \
-    OPENVAS_SCANNER_VERSION="v23.14.0" \
-    GVMD_VERSION="v24.1.2" \
-    GSA_VERSION="24.1.0" \
-    GSAD_VERSION="v24.1.0" \
-    gvm_tools_version="v24.12.1" \
+ENV GVM_LIBS_VERSION="v22.17.0" \
+    OPENVAS_SCANNER_VERSION="v23.15.3" \
+    GVMD_VERSION="v25.0.0" \
+    GSA_VERSION="24.2.0" \
+    GSAD_VERSION="v24.2.1" \
+    gvm_tools_version="v25.1.1" \
     OPENVAS_SMB_VERSION="v22.5.6" \
-    OSPD_OPENVAS_VERSION="v22.7.1" \
-    python_gvm_version="24.12.0" \
+    OSPD_OPENVAS_VERSION="v22.8.0" \
+    python_gvm_version="26.0.0" \
     PG_GVM_VERSION="main" \
-    NOTUS_VERSION="v22.6.5" \
     SYNC_VERSION="main" \
     INSTALL_PREFIX="/usr/local" \
     SOURCE_DIR="/source" \
@@ -81,15 +80,9 @@ RUN cd $SOURCE_DIR && \
     #
     
 RUN cd $SOURCE_DIR && \
-    # git clone --branch $GSA_VERSION https://github.com/greenbone/gsa.git && \
-	# cd $SOURCE_DIR/gsa && \
-    # rm -rf build && \
-    # npm install terser && \
-    # yarnpkg && \
-    # yarnpkg build && \
-	curl -f -L https://github.com/greenbone/gsa/releases/download/v$GSA_VERSION/gsa-dist-$GSA_VERSION.tar.gz -o $SOURCE_DIR/gsa-$GSA_VERSION.tar.gz && \
-	mkdir -p $SOURCE_DIR/gsa && \
-	tar -C $SOURCE_DIR/gsa -xvzf $SOURCE_DIR/gsa-$GSA_VERSION.tar.gz && \
+    curl -f -L https://github.com/greenbone/gsa/releases/download/v$GSA_VERSION/gsa-dist-$GSA_VERSION.tar.gz -o $SOURCE_DIR/gsa-$GSA_VERSION.tar.gz && \	
+    mkdir -p $SOURCE_DIR/gsa && \
+    tar -C $SOURCE_DIR/gsa -xvzf $SOURCE_DIR/gsa-$GSA_VERSION.tar.gz && \
     mkdir -p $INSTALL_PREFIX/share/gvm/gsad/web/ && \
     cp -rv $SOURCE_DIR/gsa/* $INSTALL_PREFIX/share/gvm/gsad/web/
     
@@ -141,7 +134,7 @@ RUN cd $SOURCE_DIR && \
         -DOPENVAS_RUN_DIR=/run/ospd && \
     make -j$(nproc) && \
     make install
-
+	
     #
     # Install Open Scanner Protocol for OpenVAS
     #
@@ -150,36 +143,44 @@ RUN cd $SOURCE_DIR && \
     git clone --branch $OSPD_OPENVAS_VERSION https://github.com/greenbone/ospd-openvas.git && \
     cd $SOURCE_DIR/ospd-openvas && \
     python3 -m pip install --prefix /usr . --no-warn-script-location
-    
+	
     #
-    # Install Notus Scanner
+    # Install OpenVAS Daemon (replaces Notus) and RUST/Cargo Packages
     #
-    
-RUN cd $SOURCE_DIR && \
-    git clone --branch $NOTUS_VERSION https://github.com/greenbone/notus-scanner.git && \
-    cd $SOURCE_DIR/notus-scanner && \
-    python3 -m pip install --prefix /usr . --no-warn-script-location 
-    
+	
+RUN echo "Installing Openvas Daemon" && \
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.81.0 -y && \
+    . "$HOME/.cargo/env" && \
+    mkdir -p $INSTALL_DIR/openvasd/usr/local/bin && \
+    cd $SOURCE_DIR/openvas-scanner/rust/src/openvasd && \
+    cargo build --release && \
+    cd $SOURCE_DIR/openvas-scanner/rust/src/scannerctl && \
+    cargo build --release && \
+    cp -v ../../target/release/openvasd $INSTALL_DIR/openvasd/usr/local/bin/ && \
+    cp -v ../../target/release/scannerctl $INSTALL_DIR/openvasd/usr/local/bin/ && \
+    cp -rv $INSTALL_DIR/openvasd/* /
+	
     #
     # Install Greenbone Feed Sync
     #
     
-RUN cd $SOURCE_DIR && \
-    git clone --branch $SYNC_VERSION https://github.com/greenbone/greenbone-feed-sync.git && \
-    cd $SOURCE_DIR/greenbone-feed-sync && \
-    python3 -m pip install . --no-warn-script-location
+RUN mkdir -p $INSTALL_DIR/greenbone-feed-sync && \
+    python3 -m pip install --root=$INSTALL_DIR/greenbone-feed-sync --no-warn-script-location greenbone-feed-sync && \
+    cp -rv $INSTALL_DIR/greenbone-feed-sync/* /
     
     #
     # Install Greenbone Vulnerability Management Python Library
     #
     
-RUN pip3 install python-gvm==$python_gvm_version  
+RUN python3 -m pip install --user python-gvm --break-system-packages
     
     #
     # Install GVM-Tools
     #
     
-RUN python3 -m pip install gvm-tools && \
+RUN mkdir -p $INSTALL_DIR/gvm-tools && \
+    python3 -m pip install --root=$INSTALL_DIR/gvm-tools --no-warn-script-location gvm-tools && \
+    cp -rv $INSTALL_DIR/gvm-tools/* / && \
     echo "/usr/local/lib" > /etc/ld.so.conf.d/openvas.conf && ldconfig
 
 COPY report_formats/* /report_formats/
