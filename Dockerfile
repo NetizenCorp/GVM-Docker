@@ -169,7 +169,7 @@ RUN cd $SOURCE_DIR && \
 	#
 	
 RUN echo "Installing Openvas Daemon" && \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.81.0 -y && \
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.85.0 -y && \
     . "$HOME/.cargo/env" && \
     mkdir -p $INSTALL_DIR/openvasd/usr/local/bin && \
     cd $SOURCE_DIR/openvas-scanner/rust/src/openvasd && \
