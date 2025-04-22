@@ -165,7 +165,7 @@ RUN cd $SOURCE_DIR && \
     cp -rv $INSTALL_DIR/ospd-openvas/* /
 	
 	#
-	# Install Openvasd (replaces Notus)
+	# Install OpenVAS Daemon (replaces Notus) and RUST/Cargo Packages
 	#
 	
 RUN echo "Installing Openvas Daemon" && \
