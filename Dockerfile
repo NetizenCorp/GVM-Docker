@@ -60,11 +60,11 @@ RUN cd $SOURCE_DIR && \
 	-DLOCALSTATEDIR=/var \
 	-DSYSCONFDIR=/etc \
 	-DGVM_DATA_DIR=/var \
-	-DGVMD_RUN_DIR=/run/gvmd \
-	-DOPENVAS_DEFAULT_SOCKET=/run/ospd/ospd-openvas.sock \
-	-DGVM_FEED_LOCK_PATH=/var/lib/gvm/feed-update.lock \
-	-DSYSTEMD_SERVICE_DIR=/lib/systemd/system \
-	-DLOGROTATE_DIR=/etc/logrotate.d && \
+	-DGVM_LOG_DIR=/var/log/gvm \
+ 	-DGVMD_RUN_DIR=/run/gvmd \
+  	-DOPENVAS_DEFAULT_SOCKET=/run/ospd/ospd-openvas.sock \
+   	-DGVM_FEED_LOCK_PATH=/var/lib/gvm/feed-update.lock \
+    	-DLOGROTATE_DIR=/etc/logrotate.d && \
     cmake --build $BUILD_DIR/gvmd -j$(nproc) && \
     mkdir -p $INSTALL_DIR/gvmd && cd $BUILD_DIR/gvmd && \
     make DESTDIR=$INSTALL_DIR/gvmd install && \
