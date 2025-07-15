@@ -7,15 +7,15 @@ COPY install-pkgs.sh /install-pkgs.sh
 
 RUN bash /install-pkgs.sh
 
-ENV GVM_LIBS_VERSION="v22.21.0" \
-    OPENVAS_SCANNER_VERSION="v23.17.0" \
-    GVMD_VERSION="v25.2.1" \
-    GSA_VERSION="24.6.1" \
-    GSAD_VERSION="v24.2.4" \
+ENV GVM_LIBS_VERSION="v22.23.0" \
+    OPENVAS_SCANNER_VERSION="v23.21.0" \
+    GVMD_VERSION="v26.0.0" \
+    GSA_VERSION="25.0.0" \
+    GSAD_VERSION="v24.5.0" \
     gvm_tools_version="v25.3.0" \
-    OPENVAS_SMB_VERSION="v22.5.7" \
-    OSPD_OPENVAS_VERSION="v22.8.2" \
-    python_gvm_version="26.1.1" \
+    OPENVAS_SMB_VERSION="v22.5.8" \
+    OSPD_OPENVAS_VERSION="v22.9.0" \
+    python_gvm_version="26.3.0" \
     PG_GVM_VERSION="main" \
     SYNC_VERSION="main" \
     INSTALL_PREFIX="/usr/local" \
@@ -51,8 +51,10 @@ RUN cd $SOURCE_DIR && \
     
 RUN cd $SOURCE_DIR && \
     git clone --branch $GVMD_VERSION https://github.com/greenbone/gvmd.git && \
-    mkdir -p $BUILD_DIR/gvmd && cd $BUILD_DIR/gvmd && \
-    cmake $SOURCE_DIR/gvmd \
+    mkdir -p $BUILD_DIR/gvmd && \
+    cmake \
+    	-S $SOURCE_DIR/gvmd \
+     	-B $BUILD_DIR/gvmd \
 	-DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX \
 	-DCMAKE_BUILD_TYPE=Release \
 	-DLOCALSTATEDIR=/var \
@@ -63,8 +65,10 @@ RUN cd $SOURCE_DIR && \
 	-DGVM_FEED_LOCK_PATH=/var/lib/gvm/feed-update.lock \
 	-DSYSTEMD_SERVICE_DIR=/lib/systemd/system \
 	-DLOGROTATE_DIR=/etc/logrotate.d && \
-    make -j$(nproc) && \
-    make install
+    cmake --build $BUILD_DIR/gvmd -j$(nproc) && \
+    mkdir -p $INSTALL_DIR/gvmd && cd $BUILD_DIR/gvmd && \
+    make DESTDIR=$INSTALL_DIR/gvmd install && \
+    cp -rv $INSTALL_DIR/gvmd/* /
     
     #
     # Install PostgreSQL GVM (pg-gvm)
@@ -169,8 +173,8 @@ RUN cd $SOURCE_DIR && \
 	#
 	
 RUN echo "Installing Openvas Daemon" && \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.85.0 -y && \
-    . "$HOME/.cargo/env" && \
+    # curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain 1.85.0 -y && \
+    # . "$HOME/.cargo/env" && \
     mkdir -p $INSTALL_DIR/openvasd/usr/local/bin && \
     cd $SOURCE_DIR/openvas-scanner/rust/src/openvasd && \
     cargo build --release && \
