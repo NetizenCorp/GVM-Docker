@@ -47,7 +47,7 @@ libpq-dev \
 libradcli-dev \
 libsnmp-dev \
 libssh-gcrypt-dev \
-libssl-dev\
+libssl-dev \
 libbsd-dev \
 libunistring-dev \
 libxml2-dev \
