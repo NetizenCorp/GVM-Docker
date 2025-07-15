@@ -59,7 +59,7 @@ openssh-client \
 openssh-server \
 perl-base \
 pkg-config \
-postgresql-server-dev-all \
+postgresql-server-dev-14 \
 postgresql-14 \
 postfix \
 python3 \
