@@ -47,6 +47,7 @@ libpq-dev \
 libradcli-dev \
 libsnmp-dev \
 libssh-gcrypt-dev \
+libssl-dev\
 libbsd-dev \
 libunistring-dev \
 libxml2-dev \
@@ -58,7 +59,7 @@ openssh-client \
 openssh-server \
 perl-base \
 pkg-config \
-postgresql-server-dev-14 \
+postgresql-server-dev-all \
 postgresql-14 \
 postfix \
 python3 \
@@ -80,6 +81,7 @@ python3-psutil \
 redis-server \
 rpm \
 rsync \
+rustup \
 smbclient \
 snmp \
 socat \
@@ -112,6 +114,7 @@ curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 apt-get update
 apt-get install yarn -yq --no-install-recommends
+rustup update stable
 
 
 rm -rf /var/lib/apt/lists/*
