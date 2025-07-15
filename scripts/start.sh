@@ -128,6 +128,7 @@ if [ ! -f "/firstrun" ]; then
 	usermod -aG sudo gvm
 	usermod -aG redis gvm
 	echo "%gvm ALL = NOPASSWD: /usr/local/sbin/openvas" >> /etc/sudoers
+ 	chmod 0440 /etc/sudoers.d/gvm
   
  	echo "Importing Greenbone Signing Keys..."
  	curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc
