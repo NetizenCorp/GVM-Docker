@@ -3,7 +3,7 @@
 Visit our Website: https://www.netizen.net
 
 # Greenbone Vulnerability Manager/Scanner
-## Latest Version: 23.2.1
+## Latest Version: 26.7.0
 ![Docker Pulls](https://img.shields.io/docker/pulls/netizensoc/gvm-scanner?style=plastic)
 ![GitHub](https://img.shields.io/github/license/thecomet28/gvm-docker)
 
@@ -60,7 +60,14 @@ services:
           - "2222:22"   # SSH for remote sensors. You can comment the line out with the # if you don't plan on using remote scanners.
           # - "9390:9390" # For GVM API Access. Leave commented if you do not plan on using the API for external web application access.
         restart: unless-stopped # Remove if your using for penetration testing or one-time scans. Only use if using for production/continuous scanning
-	logging:
+		hostname: ospd-openvas.local
+        cap_add:
+          - NET_ADMIN # for capturing packages in promiscuous mode
+          - NET_RAW # for raw sockets e.g. used for the boreas alive detection
+        security_opt:
+          - seccomp=unconfined
+          - apparmor=unconfined
+        logging:
           driver: "json-file"
           options:
             max-size: "1k"
@@ -163,7 +170,14 @@ services:
           - "2222:22"   # SSH for remote sensors. You can comment the line out with the # if you don't plan on using remote scanners.
           # - "9390:9390" # For GVM API Access. Leave commented if you do not plan on using the API for external web application access.
         restart: unless-stopped # Remove if your using for penetration testing or one-time scans. Only use if using for production/continuous scanning
-	logging:
+		hostname: ospd-openvas.local
+        cap_add:
+          - NET_ADMIN # for capturing packages in promiscuous mode
+          - NET_RAW # for raw sockets e.g. used for the boreas alive detection
+        security_opt:
+          - seccomp=unconfined
+          - apparmor=unconfined
+        logging:
           driver: "json-file"
           options:
             max-size: "1k"
