@@ -37,6 +37,7 @@ libical-dev \
 libksba-dev \
 libldap2-dev \
 libmicrohttpd-dev \
+libmagic-dev \
 libpaho-mqtt-dev \
 libnet1-dev \
 libpcap-dev \
