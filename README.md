@@ -44,7 +44,7 @@ nano docker-compose.yml
 ```bash
 services:
     gvm:
-        image: netizensoc/gvm-scanner:[latest|dev] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image (WARNING: May contain bugs and issues).
+        image: netizensoc/gvm-scanner:[latest|dev|dev-arm|old-stable] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image (WARNING: May contain bugs and issues).
         volumes:
           - gvm-data:/data              # DO NOT MODIFY unless establishing the external docker drive
         environment:
@@ -154,7 +154,7 @@ Edit and save the yml file with your preferences. NOTE: Netizen is not responsib
 
 services:
     gvm:
-        image: netizensoc/gvm-scanner:[latest|dev] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image (WARNING: May contain bugs and issues).
+        image: netizensoc/gvm-scanner:[latest|dev|dev-arm|old-stable] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image (WARNING: May contain bugs and issues).
         volumes:
           - gvm-data:/data              # DO NOT MODIFY unless establishing the external docker drive
         environment:
