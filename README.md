@@ -7,6 +7,9 @@ Visit our Website: https://www.netizen.net
 ![Docker Pulls](https://img.shields.io/docker/pulls/netizensoc/gvm-scanner?style=plastic)
 ![GitHub](https://img.shields.io/github/license/thecomet28/gvm-docker)
 
+>[!CAUTION]
+>PLEASE DO NOT CHANGE THE TIMEZONE INSIDE THE GREENBONE SECURITY MANAGER. There is a known issue with GSA when changing time zones, which causes a GMP authentication error. If you change your time zone, you will either need to modify the PostgreSQL database or stand up a new container/volume and remove the old one.
+
 The docker container is based on the latest version of Greenbone Vulnerability Management and OpenVAS. Netizen continues to make improvements to the software for the stability and functionality of the suite. This container supports AMD 64-bit and ARM 64-bit Linux-based operating systems and Docker Desktop for Windows using WSL 2. If upgrading from a previous version of GVM 21.04.x or older, or PostgreSQL version 13 or older, you must follow the PostgreSQL upgrade instructions. Taking a backup of your containers or VM before continuing in case of data corruption during the upgrade is recommended.
 
 A remote scanner can be found by visiting our [Openvas-Docker Github Repo](https://github.com/NetizenCorp/OpenVAS-Docker).
