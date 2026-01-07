@@ -3,7 +3,7 @@
 apt-get update
 apt-get install -y gnupg curl apt-utils ca-certificates wget
 
-echo "deb http://apt.postgresql.org/pub/repos/apt jammy-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+echo "deb http://apt.postgresql.org/pub/repos/apt noble-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 # wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 curl -sSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
 
@@ -25,7 +25,8 @@ g++ \
 gnupg \
 gnutls-bin \
 gpgsm \
-heimdal-dev \
+heimdal-multidev \
+krb5-multidev \
 libgcrypt20-dev \
 libjson-glib-dev \
 libglib2.0-dev \
@@ -36,6 +37,7 @@ libical-dev \
 libksba-dev \
 libldap2-dev \
 libmicrohttpd-dev \
+libmagic-dev \
 libpaho-mqtt-dev \
 libnet1-dev \
 libpcap-dev \
@@ -46,11 +48,11 @@ libpq-dev \
 libradcli-dev \
 libsnmp-dev \
 libssh-gcrypt-dev \
+libssl-dev \
 libbsd-dev \
 libunistring-dev \
 libxml2-dev \
 libcurl4-gnutls-dev \
-mosquitto \
 nano \
 nmap \
 nsis \
@@ -64,22 +66,23 @@ postfix \
 python3 \
 python3-cffi \
 python3-defusedxml \
-python3-gnupg \
 python3-impacket \
 python3-lxml \
 python3-packaging \
 python3-paramiko \
 python3-pip \
-python3-psutil \
 python3-redis \
 python3-setuptools \
 python3-wrapt \
 python3-paho-mqtt \
 python3-venv \
 python3-dev \
+python3-gnupg \
+python3-psutil \
 redis-server \
 rpm \
 rsync \
+rustup \
 smbclient \
 snmp \
 socat \
@@ -112,6 +115,7 @@ curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 apt-get update
 apt-get install yarn -yq --no-install-recommends
+rustup update stable
 
 
 rm -rf /var/lib/apt/lists/*

@@ -24,6 +24,9 @@ cron start
 
 if [ ! -d "/run/redis" ]; then
 	mkdir /run/redis
+  	cp /redis.conf /etc/redis/
+  	chown redis:redis /etc/redis/redis.conf
+  	echo "db_address = /run/redis/redis.sock" | tee -a /etc/openvas/openvas.conf
 fi
 
 # If redis socket exists then remove socket before start
@@ -34,7 +37,8 @@ fi
 
 # Starting Redis Server
 
-redis-server --unixsocket /run/redis/redis.sock --unixsocketperm 700 --timeout 0 --databases 65536 --maxclients 4096 --daemonize yes --port 6379 --bind 0.0.0.0
+# redis-server --unixsocket /run/redis/redis.sock --unixsocketperm 700 --timeout 0 --databases 65536 --maxclients 4096 --daemonize yes --port 6379 --bind 0.0.0.0
+redis-server /etc/redis/redis.conf
 
 # Waiting for socket to be created
 
@@ -56,13 +60,13 @@ echo "Redis ready."
 
 # Starting Mosquitto
 
-echo "Starting Mosquitto..."
-/usr/sbin/mosquitto &
+# echo "Starting Mosquitto..."
+# /usr/sbin/mosquitto &
 
 # Copy server uri on first run
 
 if [ ! -f /mqttfirstrun ]; then
-	echo "mqtt_server_uri = localhost:1883" | tee -a /etc/openvas/openvas.conf
+  echo "openvasd_server = http://localhost:3000" | tee -a /etc/openvas/openvas.conf
 	touch /mqttfirstrun
 fi
 
@@ -122,34 +126,34 @@ if [ ! -f "/firstrun" ]; then
 	useradd -r -M -U -G sudo -s /bin/bash gvm || echo "User already exists"
 	usermod -aG tty gvm
 	usermod -aG sudo gvm
-  	usermod -aG redis gvm
+	usermod -aG redis gvm
 	echo "%gvm ALL = NOPASSWD: /usr/local/sbin/openvas" >> /etc/sudoers
   
-  	echo "Importing Greenbone Signing Keys..."
-  	curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc
+ 	echo "Importing Greenbone Signing Keys..."
+ 	curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc
   	gpg --import /tmp/GBCommunitySigningKey.asc
   
   	echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" > /tmp/ownertrust.txt
   	gpg --import-ownertrust < /tmp/ownertrust.txt
 
-  	echo "Verifying Signing Keys..."
-  	export GNUPGHOME=/tmp/openvas-gnupg
-  	mkdir -p $GNUPGHOME
+ 	echo "Verifying Signing Keys..."
+ 	export GNUPGHOME=/tmp/openvas-gnupg
+ 	mkdir -p $GNUPGHOME
 
   	gpg --import /tmp/GBCommunitySigningKey.asc
-  	gpg --import-ownertrust < /tmp/ownertrust.txt
+ 	gpg --import-ownertrust < /tmp/ownertrust.txt
 
-  	export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg
+ 	export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg
  	mkdir -p $OPENVAS_GNUPG_HOME
-  	cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/
-  	chown -R gvm:gvm $OPENVAS_GNUPG_HOME
+ 	cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/
+ 	chown -R gvm:gvm $OPENVAS_GNUPG_HOME
 
 	echo "Creating Directories..."
 	mkdir -p /var/lib/gvm
-  	mkdir -p /run/gvmd
+	mkdir -p /run/gvmd
 	mkdir -p /var/lib/notus
  	mkdir -p /run/ospd/
-  	mkdir -p /run/gsad/
+ 	mkdir -p /run/gsad/
 	mkdir -p /run/notus-scanner/
 	mkdir -p /var/lib/openvas/
 	
@@ -172,8 +176,8 @@ if [ ! -f "/firstrun" ]; then
 	chown gvm:gvm /usr/local/sbin/gvmd
 	chmod 6750 /usr/local/sbin/gvmd
 	
-	chown gvm:gvm /usr/local/bin/greenbone-feed-sync
-	chmod 740 /usr/local/bin/greenbone-feed-sync
+	# chown gvm:gvm /usr/local/bin/greenbone-feed-sync
+	# chmod 740 /usr/local/bin/greenbone-feed-sync
 	
 	# Downloading Python3-Impacket and Copying
 	git clone https://github.com/SecureAuthCorp/impacket.git /python3-impacket/
@@ -196,13 +200,14 @@ if [ ! -f "/data/firstrun" ]; then
 	echo "listen_addresses = '*'" >> /data/database/postgresql.conf
 	echo "port = 5432" >> /data/database/postgresql.conf
 	echo "jit = off" >> /data/database/postgresql.conf
+  	sed -i "s/max_wal_size = 1GB/max_wal_size = 4GB/" /data/database/postgresql.conf
 	
 	echo "host    all             all              0.0.0.0/0                 md5" >> /data/database/pg_hba.conf
 	echo "host    all             all              ::/0                      md5" >> /data/database/pg_hba.conf
 	
 	chown postgres:postgres -R /data/database
 	
-  	su -c "/usr/lib/postgresql/14/bin/pg_ctl -D /data/database restart" postgres
+	su -c "/usr/lib/postgresql/14/bin/pg_ctl -D /data/database restart" postgres
  
 	touch /data/firstrun
 fi
@@ -272,7 +277,7 @@ service postfix start
 # Starting OSPD-Openvas
 
 echo "Starting Open Scanner Protocol daemon for OpenVAS..."
-ospd-openvas --log-file /var/log/gvm/ospd-openvas.log --unix-socket /run/ospd/ospd-openvas.sock --socket-mode 0o666 --log-level INFO
+ospd-openvas --unix-socket /run/ospd/ospd-openvas.sock --pid-file /run/ospd/ospd-openvas.pid --log-file /var/log/gvm/ospd-openvas.log --lock-file-dir /var/lib/openvas --socket-mode 0o776 --notus-feed-dir /var/lib/notus/advisories --log-level INFO
 
 # Waiting for OSPD Socket Creations
 
@@ -280,10 +285,10 @@ while [ ! -S /run/ospd/ospd-openvas.sock ]; do
 	sleep 1
 done
 
-# Starting Notus Scanner
+# Starting OpenVAS Daemon
 
-echo "Starting Notus Scanner..."
-/usr/local/bin/notus-scanner --products-directory /var/lib/notus/products --log-file /var/log/gvm/notus-scanner.log
+echo "Starting OpenVAS Daemon..."
+su -c "/usr/local/bin/openvasd --mode service_notus --products /var/lib/notus/products --advisories /var/lib/notus/advisories --listening 127.0.0.1:3000 &" gvm
 
 # Creating OSPD link
 
@@ -294,7 +299,7 @@ ln -s /run/ospd/ospd-openvas.sock /tmp/ospd.sock
 # Starting GVMD
 
 echo "Starting Greenbone Vulnerability Manager..."
-su -c "gvmd --listen=0.0.0.0 --port=9390 --max-ips-per-target=65536 --gnutls-priorities=SECURE128:-AES-128-CBC:-CAMELLIA-128-CBC:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1" gvm
+su -c "gvmd --listen=0.0.0.0 --port=9390 --max-ips-per-target=65536 --affected-products-query-size=50000 --gnutls-priorities=SECURE128:-AES-128-CBC:-CAMELLIA-128-CBC:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1" gvm
 
 echo "Waiting for Greenbone Vulnerability Manager to finish startup..."
 until su -c "gvmd --get-users" gvm; do
@@ -326,7 +331,7 @@ su -c "gvmd --user=\"$USERNAME\" --new-password=\"$PASSWORD\"" gvm
 
 echo "Starting Greenbone Security Assistant..."
 if [ $HTTPS == "true" ]; then
-	su -c "gsad --verbose --gnutls-priorities=SECURE128:-AES-128-CBC:-CAMELLIA-128-CBC:-VERS-SSL3.0:-VERS-TLS1.0 --timeout=$TIMEOUT --no-redirect --mlisten=127.0.0.1 --mport=9390 --port=9392 --ssl-private-key=/var/lib/gvm/private/CA/serverkey.pem --ssl-certificate=/var/lib/gvm/CA/servercert.pem" gvm
+	su -c "gsad --verbose --gnutls-priorities=SECURE128:-AES-128-CBC:-CAMELLIA-128-CBC:-VERS-SSL3.0:-VERS-TLS1.0:-VERS-TLS1.1 --timeout=$TIMEOUT --no-redirect --mlisten=127.0.0.1 --mport=9390 --port=9392 --ssl-private-key=/var/lib/gvm/private/CA/serverkey.pem --ssl-certificate=/var/lib/gvm/CA/servercert.pem" gvm
 else
 	su -c "gsad --verbose --http-only --timeout=$TIMEOUT --no-redirect --mlisten=127.0.0.1 --mport=9390 --port=9392" gvm
 fi

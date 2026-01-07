@@ -3,9 +3,12 @@
 Visit our Website: https://www.netizen.net
 
 # Greenbone Vulnerability Manager/Scanner
-## Latest Version: 23.2.1
+## Latest Version: 26.7.0
 ![Docker Pulls](https://img.shields.io/docker/pulls/netizensoc/gvm-scanner?style=plastic)
 ![GitHub](https://img.shields.io/github/license/thecomet28/gvm-docker)
+
+>[!CAUTION]
+>PLEASE DO NOT CHANGE THE TIMEZONE INSIDE THE GREENBONE SECURITY MANAGER. There is a known issue with GSA when changing time zones, which causes a GMP authentication error. If you change your time zone, you will either need to modify the PostgreSQL database or stand up a new container/volume and remove the old one.
 
 The docker container is based on the latest version of Greenbone Vulnerability Management and OpenVAS. Netizen continues to make improvements to the software for the stability and functionality of the suite. This container supports AMD 64-bit and ARM 64-bit Linux-based operating systems and Docker Desktop for Windows using WSL 2. If upgrading from a previous version of GVM 21.04.x or older, or PostgreSQL version 13 or older, you must follow the PostgreSQL upgrade instructions. Taking a backup of your containers or VM before continuing in case of data corruption during the upgrade is recommended.
 
@@ -44,7 +47,8 @@ nano docker-compose.yml
 ```bash
 services:
     gvm:
-        image: netizensoc/gvm-scanner:[latest|dev] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image (WARNING: May contain bugs and issues).
+		image: netizensoc/gvm-scanner:[latest|dev|dev-arm|old-stable] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image for both AMD64 & ARM64 Architecture. Dev is the development un-stable image on AMD64 Platforms. 
+																	  # Dev-Arm is the development un-stable image on ARM64 Platforms. Old Stable is the previous stable image.
         volumes:
           - gvm-data:/data              # DO NOT MODIFY unless establishing the external docker drive
         environment:
@@ -60,7 +64,14 @@ services:
           - "2222:22"   # SSH for remote sensors. You can comment the line out with the # if you don't plan on using remote scanners.
           # - "9390:9390" # For GVM API Access. Leave commented if you do not plan on using the API for external web application access.
         restart: unless-stopped # Remove if your using for penetration testing or one-time scans. Only use if using for production/continuous scanning
-	logging:
+		hostname: ospd-openvas.local
+        cap_add:
+          - NET_ADMIN # for capturing packages in promiscuous mode
+          - NET_RAW # for raw sockets e.g. used for the boreas alive detection
+        security_opt:
+          - seccomp=unconfined
+          - apparmor=unconfined
+        logging:
           driver: "json-file"
           options:
             max-size: "1k"
@@ -147,7 +158,8 @@ Edit and save the yml file with your preferences. NOTE: Netizen is not responsib
 
 services:
     gvm:
-        image: netizensoc/gvm-scanner:[latest|dev] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image. Dev is the development image (WARNING: May contain bugs and issues).
+        image: netizensoc/gvm-scanner:[latest|dev|dev-arm|old-stable] # PICK A VERSION AND REMOVE BRACKETS BEFORE COMPOSING. Latest is the stable image for both AMD64 & ARM64 Architecture. Dev is the development un-stable image on AMD64 Platforms. 
+																	  # Dev-Arm is the development un-stable image on ARM64 Platforms. Old Stable is the previous stable image.
         volumes:
           - gvm-data:/data              # DO NOT MODIFY unless establishing the external docker drive
         environment:
@@ -163,7 +175,14 @@ services:
           - "2222:22"   # SSH for remote sensors. You can comment the line out with the # if you don't plan on using remote scanners.
           # - "9390:9390" # For GVM API Access. Leave commented if you do not plan on using the API for external web application access.
         restart: unless-stopped # Remove if your using for penetration testing or one-time scans. Only use if using for production/continuous scanning
-	logging:
+		hostname: ospd-openvas.local
+        cap_add:
+          - NET_ADMIN # for capturing packages in promiscuous mode
+          - NET_RAW # for raw sockets e.g. used for the boreas alive detection
+        security_opt:
+          - seccomp=unconfined
+          - apparmor=unconfined
+        logging:
           driver: "json-file"
           options:
             max-size: "1k"
@@ -197,20 +216,26 @@ OR (if using docker compose V2)
 ```bash
 sudo docker compose stop
 ```
-4. Once stopped, pull the latest image of GVM
+4. Once Stopped, make a backup of your docker-compose.yml file and then pull the latest docker compose YAML file and update with your credentials from the backup file with your preferred editor.
+```
+cp docker-compose.yml docker-compose.yml.bk
+wget https://raw.githubusercontent.com/NetizenCorp/GVM-Docker/main/docker-compose.yml
+nano docker-compose.yml
+```
+5. Once stopped, pull the latest image of GVM
 ```bash
 sudo docker pull netizensoc/gvm-scanner:latest
 ```
-5. For those updating from versions prior to 23.2.1, you will need to modify the YAML file to make the drive external. This will preserve the drive and prevent accidental deletion. You will need to get the name of the volume and modify the name of the volume in the YAML file. If you are upgrading from version 23.2.1 or later, you can skip to step 7.
+6. For those updating from versions prior to 23.2.1, you will need to modify the YAML file to make the drive external. This will preserve the drive and prevent accidental deletion. You will need to get the name of the volume and modify the name of the volume in the YAML file. If you are upgrading from version 23.2.1 or later, you can skip to step 9.
 ```bash
 sudo docker volume ls
 ```
-Copy the volume name that is outputted and put it into the YAML file in each location the volume is referenced 
+7. Copy the volume name that is outputted and put it into the YAML file in each location the volume is referenced 
 ```bash
 DRIVER    VOLUME NAME
 local     gvm-data
 ```
-6. Open the YAML file to add the following configuration and update all volume names with the name that was copied. Verify everything is correct and pointing to the correct volume before executing.
+8. Open the YAML file to add the following configuration and update all volume names with the name that was copied. Verify everything is correct and pointing to the correct volume before executing.
 ```bash
 ### Update this section at the bottom of the file. Also update the volume name at the top of the file.
 volumes:
@@ -218,17 +243,17 @@ volumes:
 	name: gvm-data  # ADD THIS LINE
 	external: true  # ADD THIS LINE
 ```
-7. Next, stand up the docker container to update the image. If you need to restore remote scanner sockets and the authorized key file, go to steps 8 & 9.
+9. Next, stand up the docker container to update the image. If you need to restore remote scanner sockets and the authorized key file, go to steps 10 & 11.
 ```bash
 sudo docker compose up -d
 ```
-8. Remote scanner connectivity restoration: Once the image is fully up and running (pulled NVT updates and everything), copy the authorized key file and sockets back into their original locations. 
+10. Remote scanner connectivity restoration: Once the image is fully up and running (pulled NVT updates and everything), copy the authorized key file and sockets back into their original locations. 
 ```bash
 sudo docker exec -it [container name] bash
 cp -R /data/sockets/*  /sockets/
 cp /data/authorized_keys  /var/lib/gvm/.ssh/authorized_keys
 ```
-9. Once copied, verify you have connectivity by clicking the Sheild under the Scanners page. Note if unable to connect you may need to reboot the master scanner and remote scanner images.
+11. Once copied, verify you have connectivity by clicking the Shield under the Scanners page. Note if unable to connect you may need to reboot the master scanner and remote scanner images.
 
 ## PostgreSQL Upgrade
 If you upgrade from a previous major version of PostgreSQL 13 or under, you must upgrade your database before installation. The instructions below will guide you through the upgrade by backing up your database, recreating the docker image, and restoring the backup. The new version of GVM uses Postgres version 14. Please follow the steps below.
@@ -270,8 +295,10 @@ The key points from the diagram below are how our setup establishes a connection
 
 | Tag       | Description              |
 | --------- | ------------------------ |
-| latest    | Latest stable version    |
-| dev       | Latest development build |
+| latest    | Latest stable version of both AMD64 and ARM64    |
+| dev       | Latest development build of AMD64 version |
+| dev-arm       | Latest development build ARM64 version |
+| old-stable | Previous stable version of GVM |
 
 ## Estimated Hardware Requirements
 
